@@ -1,3 +1,34 @@
 <svg>
-  <rect id="background" />
+  <mask id="p-button">
+    <rect x="80" y="0" width="35" height="38" />
+  </mask>
+  <mask id="d-button">
+    <rect x="115" y="0" width="35" height="38" />
+  </mask>
+  <mask id="t-button">
+    <rect x="150" y="0" width="35" height="38" />
+  </mask>
+  <mask id="f-button">
+    <rect x="185" y="0" width="35" height="38" />
+  </mask>
+
+  <mask id="power-mask">
+    <image id="power-mask-img" x="0" y="0" width="100" height="70" href="powerBarOn.png" />
+  </mask>
+
+  <mask id="icon-mask">
+    <rect id="icon-mask-rect" x="80" y="0" width="35" height="38" />
+  </mask>
+
+  <image width="100%" height="100%" href="background.png" class="background" />
+
+  <image width="100%" height="70" x="0" y="0" href="powerBar.png" class="power-bar" />
+  <svg mask="#power-mask" class="power-cover">
+    <image width="100%" height="100%" x="0" y="0" href="powerBarOn.png" class="power-bar" />
+  </svg>
+
+
+  <svg mask="#icon-mask" class="icon-cover">
+    <image width="100%" height="100%" x="0" y="0" href="iconBar.png" class="icon-bar" />
+  </svg>
 </svg>
