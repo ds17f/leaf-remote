@@ -37,7 +37,7 @@ document.onkeypress = (e) => {
 
   }
   if (e.key === "down") {
-    const iconMask = document.getElementById('icon-mask-rect');
+    const iconMask = document.getElementById('icon-mask').getElementsByTagName('rect')[0];
     console.log(JSON.stringify(iconMask, null, 2));
 
     const START = 80;

@@ -19,12 +19,12 @@
   <image href="background.png" class="background fill" />
 
   <!-- The power bar -->
-  <!-- lay down the empty powerbar -->
-  <image href="powerBar.png" class="power-bar" />
   <!-- build a mask with a rect which will be resized to animate -->
   <mask id="power-mask" >
     <rect class="power-bar" />
   </mask>
+  <!-- lay down the empty powerbar -->
+  <image href="powerBar.png" class="power-bar" />
   <!-- lay down the mask with the on image in it -->
   <!-- will default to showing nothing as mask width is 0-->
   <!-- but the code will change he size of the rect and show through the on image-->
@@ -33,11 +33,17 @@
   </svg>
 
 
+  <!-- The Icons -->
+  <!-- build a mask to hide the parts of the icon we don't want to show -->
   <mask id="icon-mask">
-    <rect id="icon-mask-rect" x="80" y="0" width="35" height="38" />
+    <rect class="icon-bar"/>
   </mask>
-  <svg mask="#icon-mask" class="icon-cover">
-    <image width="100%" height="100%" x="0" y="0" href="iconBar.png" class="icon-bar" />
+  <!-- lay down the mask with the icon image on it -->
+  <!-- size it to be the icon bar, and fill the image inside -->
+  <!-- the code will change the location of the mask'd rect -->
+  <!-- which will in turn show through the icon from the icon bar -->
+  <svg mask="#icon-mask" class="icon-bar">
+    <image href="iconBar.png" class="fill"/>
   </svg>
 
 </svg>
