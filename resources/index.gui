@@ -1,34 +1,43 @@
 <svg>
-  <mask id="p-button">
-    <rect x="80" y="0" width="35" height="38" />
-  </mask>
-  <mask id="d-button">
-    <rect x="115" y="0" width="35" height="38" />
-  </mask>
-  <mask id="t-button">
-    <rect x="150" y="0" width="35" height="38" />
-  </mask>
-  <mask id="f-button">
-    <rect x="185" y="0" width="35" height="38" />
-  </mask>
+<!--  <mask id="p-button">-->
+<!--    <rect x="80" y="0" width="35" height="38" />-->
+<!--  </mask>-->
+<!--  <mask id="d-button">-->
+<!--    <rect x="115" y="0" width="35" height="38" />-->
+<!--  </mask>-->
+<!--  <mask id="t-button">-->
+<!--    <rect x="150" y="0" width="35" height="38" />-->
+<!--  </mask>-->
+<!--  <mask id="f-button">-->
+<!--    <rect x="185" y="0" width="35" height="38" />-->
+<!--  </mask>-->
 
-  <mask id="power-mask">
-    <image id="power-mask-img" x="0" y="0" width="100" height="70" href="powerBarOn.png" />
+
+
+
+  <!-- The background, lay this down first -->
+  <image href="background.png" class="background fill" />
+
+  <!-- The power bar -->
+  <!-- lay down the empty powerbar -->
+  <image href="powerBar.png" class="power-bar" />
+  <!-- build a mask with a rect which will be resized to animate -->
+  <mask id="power-mask" >
+    <rect class="power-bar" />
   </mask>
+  <!-- lay down the mask with the on image in it -->
+  <!-- will default to showing nothing as mask width is 0-->
+  <!-- but the code will change he size of the rect and show through the on image-->
+  <svg mask="#power-mask" class="power-bar">
+    <image href="powerBarOn.png" class="fill" />
+  </svg>
+
 
   <mask id="icon-mask">
     <rect id="icon-mask-rect" x="80" y="0" width="35" height="38" />
   </mask>
-
-  <image width="100%" height="100%" href="background.png" class="background" />
-
-  <image width="100%" height="70" x="0" y="0" href="powerBar.png" class="power-bar" />
-  <svg mask="#power-mask" class="power-cover">
-    <image width="100%" height="100%" x="0" y="0" href="powerBarOn.png" class="power-bar" />
-  </svg>
-
-
   <svg mask="#icon-mask" class="icon-cover">
     <image width="100%" height="100%" x="0" y="0" href="iconBar.png" class="icon-bar" />
   </svg>
+
 </svg>
