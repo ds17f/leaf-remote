@@ -1,9 +1,27 @@
 import document from "document";
 
-const isRunning = null;
-let visibleTile = 0;
 
-const powerUp = () => {
+const tiles = ["acOn", "acOff", "console"];
+
+const isRunning = null;
+
+const state = {
+  isRunning: false,
+  visibleTile: "acOn",
+  backendConnect: null,
+};
+
+const setVisibleTile = visibleTile => {
+  // fade tiles
+  document.getElementsByClassName('tile').forEach(t => {
+    t.style.display = "none";
+  });
+
+  // fade in proper tile
+  document.getElementById(visibleTile).style.display = "inline";
+};
+
+const powerUp = (currentState) => {
   const powerMask = document.getElementById('power-mask').getElementsByTagName("rect")[0];
 
   const START = 130;
@@ -17,7 +35,7 @@ const powerUp = () => {
     if (iter >= 8) {
       clearInterval(f);
       powerMask.width = 0;
-      isRunning = null;
+      currentState.isRunning = null;
       setConsoleText("Complete", "I'm done");
       return;
     }
@@ -51,22 +69,17 @@ const rotateIcon = () => {
     iconMask.x += STEP;
   }
 };
-const rotateTile = () => {
-  const tiles = ["acOn", "acOff", "console"];
-  visibleTile += 1;
-  if (visibleTile >= tiles.length) {
-    visibleTile = 0;
+const rotateTile = (currentState) => {
+  let visibleTileIndex = tiles.indexOf(state.visibleTile);
+  visibleTileIndex += 1;
+  if (visibleTileIndex >= tiles.length) {
+    visibleTileIndex = 0;
   }
-  // fade tiles
-  document.getElementsByClassName('tile').forEach(t => {
-    t.style.display = "none";
-  });
-
-  // fade in proper tile
-  document.getElementById(tiles[visibleTile]).style.display = "inline";
-
+  state.visibleTile = tiles[visibleTileIndex];
+  updateUI(currentState);
 };
 const setConsoleText = (headText, bodyText) => {
+  console.log(`head: ${headText}, body: ${bodyText}`);
   const head = document.getElementById("console-head");
   const body = document.getElementById("console-body");
 
@@ -74,21 +87,27 @@ const setConsoleText = (headText, bodyText) => {
   body.text = bodyText;
 };
 
+const updateUI = currentState => {
+  setVisibleTile(currentState.visibleTile);
+};
+
 document.onkeypress = (e) => {
   if (e.key === "up") {
     console.log(`up`);
     e.preventDefault();
-    if ( ! isRunning ) {
-      isRunning = powerUp();
+    if ( ! state.isRunning ) {
+      state.isRunning = powerUp(state);
       console.log("start running");
       setConsoleText("Run Me", "I'm running");
+      state.visibleTile = "console";
+      updateUI(state);
     } else {
       console.log("already running")
     }
 
   }
   if (e.key === "down") {
-    rotateTile();
+    rotateTile(state);
   }
 };
 

@@ -63,6 +63,7 @@
 #console-head {
   text-decoration: underline;
   text-anchor: middle;
+  text-length: 100;
 }
 #console-body {
   y: 32;
