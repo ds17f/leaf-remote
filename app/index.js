@@ -18,6 +18,7 @@ const powerUp = () => {
       clearInterval(f);
       powerMask.width = 0;
       isRunning = null;
+      setConsoleText("Complete", "I'm done");
       return;
     }
     if (iter >= 6) {
@@ -51,7 +52,7 @@ const rotateIcon = () => {
   }
 };
 const rotateTile = () => {
-  const tiles = ["acOn", "acOff"];
+  const tiles = ["acOn", "acOff", "console"];
   visibleTile += 1;
   if (visibleTile >= tiles.length) {
     visibleTile = 0;
@@ -65,6 +66,13 @@ const rotateTile = () => {
   document.getElementById(tiles[visibleTile]).style.display = "inline";
 
 };
+const setConsoleText = (headText, bodyText) => {
+  const head = document.getElementById("console-head");
+  const body = document.getElementById("console-body");
+
+  head.text = headText;
+  body.text = bodyText;
+};
 
 document.onkeypress = (e) => {
   if (e.key === "up") {
@@ -72,7 +80,8 @@ document.onkeypress = (e) => {
     e.preventDefault();
     if ( ! isRunning ) {
       isRunning = powerUp();
-      console.log("start running")
+      console.log("start running");
+      setConsoleText("Run Me", "I'm running");
     } else {
       console.log("already running")
     }
@@ -82,3 +91,4 @@ document.onkeypress = (e) => {
     rotateTile();
   }
 };
+

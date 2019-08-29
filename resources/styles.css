@@ -50,3 +50,21 @@
 .tile-default {
   display: inline;
 }
+
+#console {
+  fill: #02E7F9;
+  font-family: System-Regular;
+  text-overflow: ellipsis;
+  x: 5;
+  y: 5;
+  width: 98%;
+  height: 98%;
+}
+#console-head {
+  text-decoration: underline;
+  text-anchor: middle;
+}
+#console-body {
+  y: 32;
+
+}

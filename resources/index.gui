@@ -50,6 +50,12 @@
   <svg class="main-screen">
     <image id="acOn" href="acOn.png" class="fill tile tile-default"/>
     <image id="acOff" href="acOff.png" class="fill tile"/>
+    <svg id="console" class="tile">
+      <textarea id="console-head">Help</textarea>
+      <textarea id="console-body">
+        Here is some text that we care about
+      </textarea>
+    </svg>
   </svg>
 
 </svg>
