@@ -36,5 +36,17 @@
   width: 35;
 }
 
+.main-screen {
+  x: 30;
+  y: 84;
+  width: 237;
+  height: 157;
+}
 
+.tile {
+  display: none;
+}
 
+.tile-default {
+  display: inline;
+}

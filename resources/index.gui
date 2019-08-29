@@ -46,4 +46,10 @@
     <image href="iconBar.png" class="fill"/>
   </svg>
 
+  <!-- The Tiles for the Main Screen -->
+  <svg class="main-screen">
+    <image id="acOn" href="acOn.png" class="fill tile tile-default"/>
+    <image id="acOff" href="acOff.png" class="fill tile"/>
+  </svg>
+
 </svg>

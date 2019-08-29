@@ -1,6 +1,8 @@
 import document from "document";
 
 const isRunning = null;
+let visibleTile = 0;
+
 const powerUp = () => {
   const powerMask = document.getElementById('power-mask').getElementsByTagName("rect")[0];
 
@@ -32,6 +34,37 @@ const powerUp = () => {
 
   return f;
 };
+const rotateIcon = () => {
+  const iconMask = document.getElementById('icon-mask').getElementsByTagName('rect')[0];
+  console.log(JSON.stringify(iconMask, null, 2));
+
+  const START = 80;
+  const MAX = 185;
+  const STEP = 35;
+
+  console.log("down");
+  e.preventDefault();
+  if (iconMask.x >= MAX) {
+    iconMask.x = START;
+  } else {
+    iconMask.x += STEP;
+  }
+};
+const rotateTile = () => {
+  const tiles = ["acOn", "acOff"];
+  visibleTile += 1;
+  if (visibleTile >= tiles.length) {
+    visibleTile = 0;
+  }
+  // fade tiles
+  document.getElementsByClassName('tile').forEach(t => {
+    t.style.display = "none";
+  });
+
+  // fade in proper tile
+  document.getElementById(tiles[visibleTile]).style.display = "inline";
+
+};
 
 document.onkeypress = (e) => {
   if (e.key === "up") {
@@ -46,19 +79,6 @@ document.onkeypress = (e) => {
 
   }
   if (e.key === "down") {
-    const iconMask = document.getElementById('icon-mask').getElementsByTagName('rect')[0];
-    console.log(JSON.stringify(iconMask, null, 2));
-
-    const START = 80;
-    const MAX = 185;
-    const STEP = 35;
-
-    console.log("down");
-    e.preventDefault();
-    if (iconMask.x >= MAX) {
-      iconMask.x = START;
-    } else {
-      iconMask.x += STEP;
-    }
+    rotateTile();
   }
 };
