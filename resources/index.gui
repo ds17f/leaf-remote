@@ -1,4 +1,4 @@
-<svg>
+<svg pointer-events="visible" id="app">
 <!--  <mask id="p-button">-->
 <!--    <rect x="80" y="0" width="35" height="38" />-->
 <!--  </mask>-->
@@ -47,7 +47,7 @@
   </svg>
 
   <!-- The Tiles for the Main Screen -->
-  <svg class="main-screen">
+  <svg id="main-screen">
     <image id="acOn" href="acOn.png" class="fill tile tile-default"/>
     <image id="acOff" href="acOff.png" class="fill tile"/>
     <svg id="console" class="tile">

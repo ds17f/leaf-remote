@@ -41,6 +41,72 @@ const setConsoleText = currentState => {
   body.text = currentState.console.bodyText;
 };
 
+const checkSwipe = (clickCallback, leftCallback, rightCallback, upCallback, downCallback) => {
+  let xPos = 0;
+  let yPos = 0;
+  const mouseDownHandler = evt => {
+    xPos = evt.screenX;
+    yPos = evt.screenY;
+  };
+  const mouseUpHandler = evt => {
+    const xChange = evt.screenX - xPos;
+    const yChange = evt.screenY - yPos;
+    const threshold = 60;
+
+    if ( xChange < -threshold) {
+      leftCallback && leftCallback(xPos, yPos);
+      return;
+    }
+    if ( xChange > threshold) {
+      rightCallback && rightCallback(xPos, yPos);
+      return;
+    }
+    if ( yChange < -threshold) {
+      upCallback && upCallback(xPos, yPos);
+      return;
+    }
+    if ( yChange > threshold) {
+      downCallback && downCallback(xPos, yPos);
+      return;
+    }
+    // change hasn't been a swipe, must be a touch
+    clickCallback();
+  };
+
+  return {
+    mouseDownHandler: mouseDownHandler,
+    mouseUpHandler: mouseUpHandler
+  }
+};
+const setupTouch = () => {
+  const app = document.getElementById("app");
+  const nextTile = () => {
+    rotateTile(state, true)
+  };
+  const prevTile = () => {
+    rotateTile(state, false)
+  };
+  const clickTile = () => {
+    fireButton(state);
+  };
+  const handlers = checkSwipe(clickTile, nextTile, prevTile);
+  app.onmousedown = handlers.mouseDownHandler;
+  app.onmouseup = handlers.mouseUpHandler;
+};
+const setupButtons = () => {
+  document.onkeypress = (e) => {
+    if (e.key === "up") {
+      console.log(`up`);
+      e.preventDefault();
+      fireButton(state);
+    }
+    if (e.key === "down") {
+      rotateTile(state);
+
+    }
+  };
+};
+
 const powerUp = currentState => {
   const powerMask = document.getElementById('power-mask').getElementsByTagName("rect")[0];
 
@@ -58,6 +124,7 @@ const powerUp = currentState => {
       currentState.isRunning = null;
       currentState.console.headText = "Complete";
       currentState.console.bodyText= "I'm done";
+      updateUI(currentState);
       vibration.start("nudge");
       return;
     }
@@ -75,6 +142,19 @@ const powerUp = currentState => {
 
   return f;
 };
+const fireButton = currentState => {
+  if ( ! currentState.isRunning ) {
+    currentState.isRunning = powerUp(currentState);
+    currentState.console.headText = "Run Me";
+    currentState.console.bodyText = "I'm running";
+    currentState.visibleTile = "console";
+    console.log("start running");
+    vibration.start("confirmation");
+    updateUI(currentState);
+  } else {
+    console.log("already running")
+  }
+};
 const rotateTile = (currentState, forward = true) => {
   let visibleTileIndex = tiles.indexOf(state.visibleTile);
   visibleTileIndex += forward ? 1 : -1;
@@ -85,6 +165,8 @@ const rotateTile = (currentState, forward = true) => {
   }
   state.visibleTile = tiles[visibleTileIndex];
   updateUI(currentState);
+  // bump the user
+  vibration.start("bump");
 };
 
 const updateUI = currentState => {
@@ -93,27 +175,6 @@ const updateUI = currentState => {
   setConsoleText(currentState);
 };
 
-document.onkeypress = (e) => {
-  if (e.key === "up") {
-    console.log(`up`);
-    e.preventDefault();
-    if ( ! state.isRunning ) {
-      state.isRunning = powerUp(state);
-      state.console.headText = "Run Me";
-      state.console.bodyText = "I'm running";
-      state.visibleTile = "console";
-      console.log("start running");
-      vibration.start("confirmation");
-      updateUI(state);
-    } else {
-      console.log("already running")
-    }
 
-  }
-  if (e.key === "down") {
-    rotateTile(state);
-    // bump the user
-    vibration.start("bump");
-  }
-};
-
+setupButtons();
+setupTouch();
