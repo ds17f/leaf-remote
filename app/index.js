@@ -1,5 +1,5 @@
 import document from "document";
-
+import { vibration } from "haptics";
 
 const tiles = ["acOn", "acOff", "console"];
 const icons = {
@@ -26,6 +26,8 @@ const setVisibleTile = currentState => {
 
   // fade in proper tile
   document.getElementById(currentState.visibleTile).style.display = "inline";
+
+
 };
 const setCompanionIcon = currentState => {
   const iconMask = document.getElementById('icon-mask').getElementsByTagName('rect')[0];
@@ -56,6 +58,7 @@ const powerUp = currentState => {
       currentState.isRunning = null;
       currentState.console.headText = "Complete";
       currentState.console.bodyText= "I'm done";
+      vibration.start("nudge");
       return;
     }
     if (iter >= 6) {
@@ -72,11 +75,13 @@ const powerUp = currentState => {
 
   return f;
 };
-const rotateTile = (currentState) => {
+const rotateTile = (currentState, forward = true) => {
   let visibleTileIndex = tiles.indexOf(state.visibleTile);
-  visibleTileIndex += 1;
+  visibleTileIndex += forward ? 1 : -1;
   if (visibleTileIndex >= tiles.length) {
     visibleTileIndex = 0;
+  } else if (visibleTileIndex < 0) {
+    visibleTileIndex = tiles.length - 1;
   }
   state.visibleTile = tiles[visibleTileIndex];
   updateUI(currentState);
@@ -98,6 +103,7 @@ document.onkeypress = (e) => {
       state.console.bodyText = "I'm running";
       state.visibleTile = "console";
       console.log("start running");
+      vibration.start("confirmation");
       updateUI(state);
     } else {
       console.log("already running")
@@ -106,6 +112,8 @@ document.onkeypress = (e) => {
   }
   if (e.key === "down") {
     rotateTile(state);
+    // bump the user
+    vibration.start("bump");
   }
 };
 
