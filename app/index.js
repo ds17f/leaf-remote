@@ -1,7 +1,22 @@
 import document from "document";
+import * as messaging from "messaging";
 import { vibration } from "haptics";
+import { addTouch } from "./lib-fitbit-ui"
 
-const tiles = ["acOn", "acOff", "console"];
+const output = document.getElementById("console-debug");
+const logger = {
+  log: m => {
+    const nl = "\n";
+    console.log(m);
+    const timestamp = new Date().toLocaleTimeString();
+    const currentText = output.text;
+    output.text = `[${timestamp}]${nl}`;
+    output.text += `${m}${nl}`;
+    output.text += currentText;
+  }
+};
+
+const tiles = ["acOn", "acOff", "console", "debug"];
 const icons = {
   notConnected: 80,
   connecting: 115,
@@ -41,43 +56,7 @@ const setConsoleText = currentState => {
   body.text = currentState.console.bodyText;
 };
 
-const checkSwipe = (clickCallback, leftCallback, rightCallback, upCallback, downCallback) => {
-  let xPos = 0;
-  let yPos = 0;
-  const mouseDownHandler = evt => {
-    xPos = evt.screenX;
-    yPos = evt.screenY;
-  };
-  const mouseUpHandler = evt => {
-    const xChange = evt.screenX - xPos;
-    const yChange = evt.screenY - yPos;
-    const threshold = 60;
 
-    if ( xChange < -threshold) {
-      leftCallback && leftCallback(xPos, yPos);
-      return;
-    }
-    if ( xChange > threshold) {
-      rightCallback && rightCallback(xPos, yPos);
-      return;
-    }
-    if ( yChange < -threshold) {
-      upCallback && upCallback(xPos, yPos);
-      return;
-    }
-    if ( yChange > threshold) {
-      downCallback && downCallback(xPos, yPos);
-      return;
-    }
-    // change hasn't been a swipe, must be a touch
-    clickCallback();
-  };
-
-  return {
-    mouseDownHandler: mouseDownHandler,
-    mouseUpHandler: mouseUpHandler
-  }
-};
 const setupTouch = () => {
   const app = document.getElementById("app");
   const nextTile = () => {
@@ -89,14 +68,14 @@ const setupTouch = () => {
   const clickTile = () => {
     fireButton(state);
   };
-  const handlers = checkSwipe(clickTile, nextTile, prevTile);
-  app.onmousedown = handlers.mouseDownHandler;
-  app.onmouseup = handlers.mouseUpHandler;
+
+  addTouch(app, clickTile, nextTile, prevTile);
+
 };
 const setupButtons = () => {
   document.onkeypress = (e) => {
     if (e.key === "up") {
-      console.log(`up`);
+      logger.log(`up`);
       e.preventDefault();
       fireButton(state);
     }
@@ -144,15 +123,17 @@ const powerUp = currentState => {
 };
 const fireButton = currentState => {
   if ( ! currentState.isRunning ) {
-    currentState.isRunning = powerUp(currentState);
-    currentState.console.headText = "Run Me";
-    currentState.console.bodyText = "I'm running";
-    currentState.visibleTile = "console";
-    console.log("start running");
-    vibration.start("confirmation");
-    updateUI(currentState);
+    if (sendMessage("GO")) {
+      currentState.isRunning = powerUp(currentState);
+      currentState.console.headText = "Run Me";
+      currentState.console.bodyText = "I'm running";
+      currentState.visibleTile = "console";
+      logger.log("start running");
+      vibration.start("confirmation");
+      updateUI(currentState);
+    }
   } else {
-    console.log("already running")
+    logger.log("already running")
   }
 };
 const rotateTile = (currentState, forward = true) => {
@@ -178,3 +159,48 @@ const updateUI = currentState => {
 
 setupButtons();
 setupTouch();
+
+
+
+const setConnectState = () => {
+  if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+    state.companionConnect = "connected";
+  }
+  if (messaging.peerSocket.readyState === messaging.peerSocket.CLOSED) {
+    logger.log("connection closed")
+    state.companionConnect = "failed";
+  }
+  updateUI(state);
+  return state.companionConnect === "connected";
+};
+
+// Listen for the onopen event
+messaging.peerSocket.onopen = function() {
+  sendMessage("test");
+  setConnectState();
+};
+
+messaging.peerSocket.onerror = function() {
+  setConnectState();
+};
+
+// Listen for the onmessage event
+messaging.peerSocket.onmessage = function(evt) {
+
+  // Output the message to the console
+  const uiConsole = document.getElementById('console');
+  uiConsole.text = evt.data;
+  logger.log(JSON.stringify(evt.data));
+};
+
+
+// Send a message to the peer
+const sendMessage = (data) => {
+  if ( setConnectState() ) {
+    logger.log(`sending: ${JSON.stringify(data)}`);
+    messaging.peerSocket.send(data);
+    logger.log(`message sent`);
+    return true;
+  }
+  return false;
+};

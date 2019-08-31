@@ -58,4 +58,17 @@
     </svg>
   </svg>
 
+  <use id="debug" href="#scrollview" class="tile fill">
+    <rect id="console-debug-background" class="fill"/>
+    <use href="#scrollview-item" class="console-debug">
+      <textarea id="console-debug">
+      </textarea>
+    </use>
+    <use href="#scrollview-item" class="console-debug">
+      <textarea>
+        hi
+      </textarea>
+    </use>
+  </use>
+
 </svg>

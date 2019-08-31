@@ -67,5 +67,18 @@
 }
 #console-body {
   y: 32;
+}
 
+.console-debug {
+  height: 9999;
+}
+
+#console-debug {
+  fill: white;
+  text-length: 9999;
+  font-size: 24;
+}
+#console-debug-background {
+  fill: black;
+  opacity: .9;
 }
