@@ -27,7 +27,7 @@ export const addTouch = (uiComponent, clickCallback, leftCallback, rightCallback
       return;
     }
     // change hasn't been a swipe, must be a touch
-    clickCallback();
+    clickCallback && clickCallback();
   };
 
   uiComponent.onmousedown = mouseDownHandler;
