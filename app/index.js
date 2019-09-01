@@ -71,6 +71,8 @@ const setupTouch = () => {
 
   addTouch(app, clickTile, nextTile, prevTile);
 
+  addTouch(document.getElementById("debug"), null, nextTile, prevTile);
+
 };
 const setupButtons = () => {
   document.onkeypress = (e) => {
@@ -84,6 +86,28 @@ const setupButtons = () => {
 
     }
   };
+};
+const connectToPeer = () => {
+  logger.log("Connecting to peer");
+// Listen for the onopen event
+  messaging.peerSocket.onopen = function() {
+    sendMessage("test");
+    setConnectState();
+  };
+
+  messaging.peerSocket.onerror = function() {
+    setConnectState();
+  };
+
+// Listen for the onmessage event
+  messaging.peerSocket.onmessage = function(evt) {
+
+    // Output the message to the console
+    const uiConsole = document.getElementById('console');
+    uiConsole.text = evt.data;
+    logger.log(JSON.stringify(evt.data));
+  };
+
 };
 
 const powerUp = currentState => {
@@ -156,10 +180,14 @@ const updateUI = currentState => {
   setConsoleText(currentState);
 };
 
-
-setupButtons();
-setupTouch();
-
+const init = () => {
+  logger.log("Init start");
+  connectToPeer();
+  setupButtons();
+  setupTouch();
+  logger.log("Init complete");
+};
+init();
 
 
 const setConnectState = () => {
@@ -174,24 +202,6 @@ const setConnectState = () => {
   return state.companionConnect === "connected";
 };
 
-// Listen for the onopen event
-messaging.peerSocket.onopen = function() {
-  sendMessage("test");
-  setConnectState();
-};
-
-messaging.peerSocket.onerror = function() {
-  setConnectState();
-};
-
-// Listen for the onmessage event
-messaging.peerSocket.onmessage = function(evt) {
-
-  // Output the message to the console
-  const uiConsole = document.getElementById('console');
-  uiConsole.text = evt.data;
-  logger.log(JSON.stringify(evt.data));
-};
 
 
 // Send a message to the peer
