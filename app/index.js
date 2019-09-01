@@ -46,12 +46,10 @@ const setConnectState = () => {
     state.companionConnect = "failed";
   }
   updateUI(state);
-  // return state.companionConnect === "connected";
-  return true;
-};
 
-// Send a message to the peer
-const sendMessage = (data) => {
+  return state.companionConnect === "connected";
+};
+const sendMessage = data => {
   if ( setConnectState() ) {
     logger.debug(`sending: ${JSON.stringify(data)}`);
     try {
@@ -89,7 +87,6 @@ const setConsoleText = currentState => {
   body.text = currentState.console.bodyText;
 };
 
-
 const setupTouch = () => {
   const app = document.getElementById("app");
   const nextTile = () => {
@@ -121,7 +118,6 @@ const setupButtons = () => {
 };
 const connectToPeer = () => {
   logger.debug("Connecting to peer");
-  sendMessage("wake up baby");
 // Listen for the onopen event
   peerSocket.onopen = function() {
     sendMessage("test");
