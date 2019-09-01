@@ -118,7 +118,7 @@ const setupButtons = () => {
 };
 const connectToPeer = () => {
   logger.debug("Connecting to peer");
-// Listen for the onopen event
+  // Listen for the onopen event
   peerSocket.onopen = function() {
     sendMessage("test");
     setConnectState();
@@ -128,11 +128,10 @@ const connectToPeer = () => {
     setConnectState();
   };
 
-// Listen for the onmessage event
+  // Listen for the onmessage event
   peerSocket.onmessage = function(evt) {
-
     // Output the message to the console
-    const uiConsole = document.getElementById('console');
+    const uiConsole = document.getElementById('console-body');
     uiConsole.text = evt.data;
     logger.debug(JSON.stringify(evt.data));
   };

@@ -1,14 +1,18 @@
 import { peerSocket } from "messaging";
 import { me } from "companion"
 
+const sendMessage = (data) => {
+  try {
+    peerSocket.send(data);
+  } catch (error) {
+    console.log(`couldn't send "${JSON.stringify(data)}": ${error}`)
+  }
+};
+
 if (me.launchReasons.peerAppLaunched) {
   // The Device application caused the Companion to start
   console.log("Device application was launched!");
-  try {
-    peerSocket.send("I hear you.");
-  } catch (error) {
-    console.log(`couldn't send message: ${error}`)
-  }
+
 }
 
 // Listen for the onmessage event
@@ -20,5 +24,6 @@ peerSocket.onmessage = (evt) => {
 // Listen for the onopen event
 peerSocket.onopen = () => {
   // Ready to send or receive messages
-  console.log("Ready to send/receive")
+  console.log("Ready to send/receive");
+  sendMessage("companion online");
 };
