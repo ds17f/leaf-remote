@@ -1,5 +1,9 @@
 import { peerSocket } from "messaging";
+import { settingsStorage } from "settings";
 import { me } from "companion"
+
+console.log(`username: ${settingsStorage.getItem("username")}`);
+console.log(`password: ${settingsStorage.getItem("password")}`);
 
 const sendMessage = (data) => {
   try {

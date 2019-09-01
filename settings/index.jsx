@@ -4,10 +4,18 @@ function settingsComponent(props) {
       <Section
         title={
           <Text bold align="center">
-            App Settings
+            Nissan API Credentials
           </Text>
         }
       />
+      <Text>
+        Please enter your username/password for connecting to Nissan's API.
+        These are the credentials you enter into the NissanConnect app or the
+        Nissan website.  These are not the credentials you enter in the car's
+        head unit.
+      </Text>
+      <TextInput label="username" settingsKey="username"/>
+      <TextInput label="password" settingsKey="password" type="password" />
     </Page>
   );
 }
