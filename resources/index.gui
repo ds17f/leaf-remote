@@ -48,9 +48,9 @@
 
   <!-- The Tiles for the Main Screen -->
   <svg id="main-screen">
-    <image id="acOn" href="acOn.png" class="fill tile tile-default"/>
+    <image id="acOn" href="acOn.png" class="fill tile"/>
     <image id="acOff" href="acOff.png" class="fill tile"/>
-    <svg id="console" class="tile">
+    <svg id="console" class="tile tile-default">
       <textarea id="console-head">Help</textarea>
       <textarea id="console-body">
         Here is some text that we care about

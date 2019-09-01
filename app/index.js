@@ -12,7 +12,7 @@ const icons = {
 };
 const state = {
   isRunning: false,
-  visibleTile: "acOn",
+  visibleTile: "console",
   companionConnect: "notConnected",
   console: {
     headText: "Help",
@@ -67,7 +67,6 @@ const connectToPeer = () => {
   logger.debug("Connecting to peer");
   // Listen for the onopen event
   peerSocket.onopen = function() {
-    sendMessage("test");
     setConnectState();
   };
 
@@ -77,10 +76,8 @@ const connectToPeer = () => {
 
   // Listen for the onmessage event
   peerSocket.onmessage = function(evt) {
-    // Output the message to the console
-    const uiConsole = document.getElementById('console-body');
-    uiConsole.text = evt.data;
-    logger.debug(JSON.stringify(evt.data));
+    logger.debug(`Received message: ${JSON.stringify(evt.data)}`);
+    parseCompanionMessage(state, evt.data);
   };
 
 };
@@ -202,10 +199,74 @@ const rotateTile = (currentState, forward = true) => {
   vibration.start("bump");
 };
 
+const updateConsole = (currentState, body) => {
+  currentState.console.bodyText = body;
+  logger.debug(body);
+  updateUI(currentState);
+};
 const updateUI = currentState => {
   setVisibleTile(currentState);
   setCompanionIcon(currentState);
   setConsoleText(currentState);
+};
+
+const parseCompanionMessage = (currentState, data) => {
+  // if ( ! data && ! data.type ) {
+  //   logger.debug(`Message: ${JSON.stringify(data)} does not have "type" property}`)
+  //   return false;
+  // }
+
+  switch (data.type) {
+    case "API": {
+      switch (data.action) {
+        case "LOGIN_START":
+          currentState.console.headText = "Connecting";
+          updateConsole(currentState, "Logging in to Nissan");
+          break;
+        case "LOGIN_COMPLETE":
+          updateConsole(currentState, "Logged in successfully");
+          break;
+        case "AC_ON":
+          currentState.console.headText = "Start AC";
+          updateConsole(currentState, "Request AC Start");
+          break;
+        case "AC_SUCCESS":
+          updateConsole(currentState, "AC Turned ON");
+          break;
+        case "AC_POLLING":
+          updateConsole(currentState, "Checking AC Start Status");
+          break;
+        default:
+          logger.error(`Unknown api action: ${data.action}`);
+          break;
+      }
+      break;
+    }
+    case "CONNECT": {
+      switch (data.action) {
+        case "BEGIN":
+          apiLogin();
+          break;
+        case "END":
+          break;
+      }
+      break;
+    }
+    case "DEBUG": {
+      logger.debug(data.message);
+      break;
+    }
+    default:
+      logger.error(`Unknown companion message type: ${JSON.stringify(data)}`);
+      break;
+  }
+};
+
+const apiLogin = () => {
+  sendMessage({
+    type: "API",
+    action: "LOGIN"
+  })
 };
 
 const init = () => {

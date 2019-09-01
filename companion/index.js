@@ -7,6 +7,7 @@ console.log(`password: ${settingsStorage.getItem("password")}`);
 
 const sendMessage = (data) => {
   try {
+    console.log(`Sending message: ${JSON.stringify(data)}`);
     peerSocket.send(data);
   } catch (error) {
     console.log(`couldn't send "${JSON.stringify(data)}": ${error}`)
@@ -21,13 +22,51 @@ if (me.launchReasons.peerAppLaunched) {
 
 // Listen for the onmessage event
 peerSocket.onmessage = (evt) => {
+  console.log(`Received message: ${JSON.stringify(evt.data)}`);
+  let timer = null;
+  let loops = 0;
+  const MAX_LOOPS = 3;
   // Output the message to the console
-  console.log(JSON.stringify(evt.data));
+  if (evt.data.type === "API") {
+    switch(evt.data.action) {
+      case "LOGIN":
+        nissanLogin();
+        break;
+      case "AC_ON":
+        sendMessage({type: "API", action: "AC_ON"});
+        console.log("simulate AC_ON");
+        timer = setInterval(() => {
+          console.log(`loop: ${loops}`);
+          if (loops >= MAX_LOOPS ){
+            clearInterval(timer);
+            loops = 0;
+            sendMessage({type: "API", action: "AC_SUCCESS"});
+            return true;
+          }
+          sendMessage({type: "API", action: "AC_POLLING"});
+        }, 10000);
+        break;
+      default:
+        console.log(`UNKNOWN ACTION: ${evt.data.action}`);
+        break;
+    }
+
+  }
 };
 
 // Listen for the onopen event
 peerSocket.onopen = () => {
   // Ready to send or receive messages
   console.log("Ready to send/receive");
-  sendMessage("companion online");
+  sendMessage({type: "CONNECT", action: "BEGIN"});
+};
+
+const nissanLogin = () => {
+  sendMessage({type: "API", action: "LOGIN_START"});
+  console.log("simulate login");
+  const loginComplete = setInterval(() => {
+    console.log("login complete");
+    sendMessage({type: "API", action: "LOGIN_COMPLETE"});
+    clearInterval(loginComplete);
+  }, 5000);
 };
