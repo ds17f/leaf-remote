@@ -46,8 +46,6 @@ const configureApp = () => {
 
   logger.debug("disable app timeout");
   me.appTimeoutEnabled = false;
-  logger.debug("keep screen on");
-  display.autoOff = false;
 };
 
 const setConnectState = () => {
