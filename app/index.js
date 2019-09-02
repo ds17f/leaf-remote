@@ -6,7 +6,7 @@ import { display } from "display";
 
 import { addTouch } from "./lib-fitbit-ui"
 
-const tiles = ["acOn", "acOff", "console", "debug"];
+const tiles = ["acOn", "acOff", "console"];
 const icons = {
   notConnected: 80,
   connecting: 115,
@@ -148,7 +148,22 @@ const setupTouch = () => {
     rotateTile(state, false)
   };
   const clickTile = () => {
-    fireButton(state);
+    switch (state.visibleTile) {
+      case "acOn":
+        fireButton(state);
+        break;
+      case "acOff":
+        fireButton(state);
+        break;
+      case "console":
+        showDebugLog(state);
+        break;
+      case "debug":
+        break;
+
+      default:
+        break;
+    }
   };
 
   addTouch(app, clickTile, nextTile, prevTile);
@@ -224,6 +239,11 @@ const fireButton = currentState => {
 
 const rotateTile = (currentState, forward = true) => {
   if ( checkPeerConnection(currentState) ) {
+    // if we're showing the debug console
+    // we'll just pretend we're showing the normal console
+    if (currentState.visibleTile === "debug") {
+      currentState.visibleTile = "console";
+    }
     let visibleTileIndex = tiles.indexOf(state.visibleTile);
     visibleTileIndex += forward ? 1 : -1;
     if (visibleTileIndex >= tiles.length) {
@@ -237,6 +257,11 @@ const rotateTile = (currentState, forward = true) => {
     vibration.start("bump");
     return true;
   }
+};
+
+const showDebugLog = currentState => {
+  currentState.visibleTile = "debug";
+  updateUI(currentState);
 };
 
 const updateConsole = (currentState, body, head = null) => {
