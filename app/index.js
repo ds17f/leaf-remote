@@ -59,7 +59,10 @@ const setConnectState = () => {
   if (peerSocket.readyState === peerSocket.CLOSED) {
     logger.debug("connection is closed");
     state.companionConnect = "failed";
+    state.visibleTile = "console";
+    updateConsole(state, "Peer app failed to connect");
   }
+  //TODO: this is redundant as updateConsole currently calls
   updateUI(state);
 
   return state.companionConnect === "connected";
@@ -95,6 +98,16 @@ const connectToPeer = () => {
     parseCompanionMessage(state, evt.data);
   };
 
+};
+const checkPeerConnection = currentState => {
+  if (currentState.companionConnect === "connected") {
+    return true;
+  }
+  state.visibleTile = "console";
+  state.console.bodyText = "Peer app is not connected";
+  vibration.start("bump");
+  updateUI(currentState);
+  return false;
 };
 
 const setVisibleTile = currentState => {
@@ -192,7 +205,8 @@ const powerUp = currentState => {
   return f;
 };
 const fireButton = currentState => {
-  if ( ! currentState.isRunning ) {
+  if (checkPeerConnection(currentState)) {
+    if ( ! currentState.isRunning ) {
     if (sendMessage("GO")) {
       currentState.isRunning = powerUp(currentState);
       currentState.console.headText = "Run Me";
@@ -205,19 +219,24 @@ const fireButton = currentState => {
   } else {
     logger.debug("already running")
   }
-};
-const rotateTile = (currentState, forward = true) => {
-  let visibleTileIndex = tiles.indexOf(state.visibleTile);
-  visibleTileIndex += forward ? 1 : -1;
-  if (visibleTileIndex >= tiles.length) {
-    visibleTileIndex = 0;
-  } else if (visibleTileIndex < 0) {
-    visibleTileIndex = tiles.length - 1;
   }
-  state.visibleTile = tiles[visibleTileIndex];
-  updateUI(currentState);
-  // bump the user
-  vibration.start("bump");
+};
+
+const rotateTile = (currentState, forward = true) => {
+  if ( checkPeerConnection(currentState) ) {
+    let visibleTileIndex = tiles.indexOf(state.visibleTile);
+    visibleTileIndex += forward ? 1 : -1;
+    if (visibleTileIndex >= tiles.length) {
+      visibleTileIndex = 0;
+    } else if (visibleTileIndex < 0) {
+      visibleTileIndex = tiles.length - 1;
+    }
+    state.visibleTile = tiles[visibleTileIndex];
+    updateUI(currentState);
+    // bump the user
+    vibration.start("bump");
+    return true;
+  }
 };
 
 const updateConsole = (currentState, body, head = null) => {
