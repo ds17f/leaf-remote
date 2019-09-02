@@ -1,6 +1,8 @@
 import document from "document";
 import { peerSocket } from "messaging";
 import { vibration } from "haptics";
+import { me } from 'appbit';
+
 import { addTouch } from "./lib-fitbit-ui"
 
 const tiles = ["acOn", "acOff", "console", "debug"];
@@ -37,6 +39,13 @@ const logger = {
   debug: uiLogOut
 };
 
+const configureApp = () => {
+  // TODO: Configure logging
+  // TODO: Configure state?
+
+  logger.debug("disable app timeout");
+  me.appTimeoutEnabled = false;
+};
 const setConnectState = () => {
   if (peerSocket.readyState === peerSocket.OPEN) {
     state.companionConnect = "connected";
@@ -271,6 +280,7 @@ const apiLogin = () => {
 
 const init = () => {
   logger.debug("Init start");
+  configureApp();
   connectToPeer();
   setupButtons();
   setupTouch();
