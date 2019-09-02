@@ -51,9 +51,9 @@
     <image id="acOn" href="acOn.png" class="fill tile"/>
     <image id="acOff" href="acOff.png" class="fill tile"/>
     <svg id="console" class="tile tile-default">
-      <textarea id="console-head">Help</textarea>
+      <textarea id="console-head">Peer Connect</textarea>
       <textarea id="console-body">
-        Here is some text that we care about
+          Connecting to the peer app on your phone.
       </textarea>
     </svg>
   </svg>

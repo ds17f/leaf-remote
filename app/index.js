@@ -1,7 +1,8 @@
 import document from "document";
 import { peerSocket } from "messaging";
 import { vibration } from "haptics";
-import { me } from 'appbit';
+import { me } from "appbit";
+import { display } from "display";
 
 import { addTouch } from "./lib-fitbit-ui"
 
@@ -17,8 +18,8 @@ const state = {
   visibleTile: "console",
   companionConnect: "notConnected",
   console: {
-    headText: "Help",
-    bodyText: "This is some help text"
+    headText: null,
+    bodyText: null
   }
 };
 
@@ -45,10 +46,15 @@ const configureApp = () => {
 
   logger.debug("disable app timeout");
   me.appTimeoutEnabled = false;
+  logger.debug("keep screen on");
+  display.autoOff = false;
 };
+
 const setConnectState = () => {
   if (peerSocket.readyState === peerSocket.OPEN) {
     state.companionConnect = "connected";
+    state.visibleTile = tiles[0];
+    updateConsole(state, "Peer app connected!");
   }
   if (peerSocket.readyState === peerSocket.CLOSED) {
     logger.debug("connection is closed");
@@ -110,8 +116,14 @@ const setConsoleText = currentState => {
   const head = document.getElementById("console-head");
   const body = document.getElementById("console-body");
 
-  head.text = currentState.console.headText;
-  body.text = currentState.console.bodyText;
+  // only change if the value is not null
+  // set to "" to clear a field instead of null
+  if (currentState.console.headText !== null) {
+    head.text = currentState.console.headText;
+  }
+  if (currentState.console.bodyText!== null) {
+    body.text = currentState.console.bodyText;
+  }
 };
 
 const setupTouch = () => {
@@ -208,8 +220,9 @@ const rotateTile = (currentState, forward = true) => {
   vibration.start("bump");
 };
 
-const updateConsole = (currentState, body) => {
+const updateConsole = (currentState, body, head = null) => {
   currentState.console.bodyText = body;
+  currentState.console.headText = head;
   logger.debug(body);
   updateUI(currentState);
 };
@@ -254,7 +267,6 @@ const parseCompanionMessage = (currentState, data) => {
     case "CONNECT": {
       switch (data.action) {
         case "BEGIN":
-          apiLogin();
           break;
         case "END":
           break;
