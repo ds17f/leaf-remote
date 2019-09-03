@@ -47,26 +47,8 @@ const configureApp = () => {
   logger.debug("disable app timeout");
   me.appTimeoutEnabled = false;
 };
-
-const setConnectState = () => {
-  if (peerSocket.readyState === peerSocket.OPEN) {
-    state.companionConnect = "connected";
-    state.visibleTile = tiles[0];
-    updateConsole(state, "Peer app connected!");
-  }
-  if (peerSocket.readyState === peerSocket.CLOSED) {
-    logger.debug("connection is closed");
-    state.companionConnect = "failed";
-    state.visibleTile = "console";
-    updateConsole(state, "Peer app failed to connect");
-  }
-  //TODO: this is redundant as updateConsole currently calls
-  updateUI(state);
-
-  return state.companionConnect === "connected";
-};
 const sendMessage = data => {
-  if ( setConnectState() ) {
+  if ( checkPeerConnection(state)) {
     logger.debug(`sending: ${JSON.stringify(data)}`);
     try {
       peerSocket.send(data);
@@ -79,33 +61,19 @@ const sendMessage = data => {
   }
   return false;
 };
-const connectToPeer = () => {
-  logger.debug("Connecting to peer");
-  // Listen for the onopen event
-  peerSocket.onopen = function() {
-    setConnectState();
-  };
 
-  peerSocket.onerror = function() {
-    setConnectState();
-  };
-
-  // Listen for the onmessage event
-  peerSocket.onmessage = function(evt) {
-    logger.debug(`Received message: ${JSON.stringify(evt.data)}`);
-    parseCompanionMessage(state, evt.data);
-  };
-
+const isPeerConnected = () => {
+  return peerSocket.readyState === peerSocket.OPEN;
 };
 const checkPeerConnection = currentState => {
-  if (currentState.companionConnect === "connected") {
+  if (isPeerConnected() ) {
     return true;
   }
+  updatePeerConnectUI(currentState);
   state.visibleTile = "console";
-  state.console.bodyText = "Peer app is not connected";
   vibration.start("bump");
   updateUI(currentState);
-  return false;
+  return false
 };
 
 const setVisibleTile = currentState => {
@@ -136,7 +104,30 @@ const setConsoleText = currentState => {
     body.text = currentState.console.bodyText;
   }
 };
+const updateUI = currentState => {
+  setVisibleTile(currentState);
+  setCompanionIcon(currentState);
+  setConsoleText(currentState);
+};
 
+const setupPeerConnection = () => {
+  logger.debug("Configure peerSocket");
+  // Listen for the onopen event
+  peerSocket.onopen = () => {
+    updatePeerConnectUI(state);
+  };
+
+  peerSocket.onerror = () => {
+    updatePeerConnectUI(state)
+  };
+
+  // Listen for the onmessage event
+  peerSocket.onmessage = function(evt) {
+    logger.debug(`Received message: ${JSON.stringify(evt.data)}`);
+    parseCompanionMessage(state, evt.data);
+  };
+
+};
 const setupTouch = () => {
   const app = document.getElementById("app");
   const nextTile = () => {
@@ -261,17 +252,25 @@ const showDebugLog = currentState => {
   currentState.visibleTile = "debug";
   updateUI(currentState);
 };
-
+const updatePeerConnectUI = currentState => {
+  if (isPeerConnected()) {
+    currentState.companionConnect = "connected";
+    currentState.visibleTile = tiles[0];
+    updateConsole(currentState, "Peer socket is open");
+  } else {
+    if (currentState.companionConnect !== "failed") {
+      updateConsole(currentState, "Peer socket closed");
+    }
+    currentState.companionConnect = "failed";
+    currentState.visibleTile = "console";
+  }
+  updateUI(currentState);
+};
 const updateConsole = (currentState, body, head = null) => {
   currentState.console.bodyText = body;
   currentState.console.headText = head;
   logger.debug(body);
   updateUI(currentState);
-};
-const updateUI = currentState => {
-  setVisibleTile(currentState);
-  setCompanionIcon(currentState);
-  setConsoleText(currentState);
 };
 
 const parseCompanionMessage = (currentState, data) => {
@@ -335,7 +334,7 @@ const apiLogin = () => {
 const init = () => {
   logger.debug("Init start");
   configureApp();
-  connectToPeer();
+  setupPeerConnection();
   setupButtons();
   setupTouch();
   logger.debug("Init complete");

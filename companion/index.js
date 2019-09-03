@@ -64,9 +64,9 @@ peerSocket.onopen = () => {
 const nissanLogin = () => {
   sendMessage({type: "API", action: "LOGIN_START"});
   console.log("simulate login");
-  const loginComplete = setInterval(() => {
+  setTimeout(() => {
     console.log("login complete");
     sendMessage({type: "API", action: "LOGIN_COMPLETE"});
-    clearInterval(loginComplete);
   }, 5000);
 };
+
