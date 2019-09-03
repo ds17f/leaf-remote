@@ -115,6 +115,8 @@ const setupPeerConnection = () => {
   // Listen for the onopen event
   peerSocket.onopen = () => {
     updatePeerConnectUI(state);
+    // notify that the connection is open
+    vibration.start("ping");
   };
 
   peerSocket.onerror = () => {
