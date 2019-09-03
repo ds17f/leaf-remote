@@ -172,6 +172,19 @@ const setupButtons = () => {
     }
   };
 };
+const ensureConnect = () => {
+  setTimeout(() => {
+    if (! isPeerConnected() ){
+      vibration.start("alert");
+      updateConsole(state, "Connection failed after 10 seconds");
+      setTimeout(() => {
+        vibration.stop();
+        logger.debug("enable app timeout");
+        me.appTimeoutEnabled = true;
+      }, 3000);
+    }
+  }, 10000)
+};
 
 const powerUp = currentState => {
   const powerMask = document.getElementById('power-mask').getElementsByTagName("rect")[0];
@@ -337,6 +350,7 @@ const init = () => {
   setupPeerConnection();
   setupButtons();
   setupTouch();
+  ensureConnect();
   logger.debug("Init complete");
 };
 init();
