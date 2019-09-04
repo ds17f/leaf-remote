@@ -74,7 +74,7 @@ const logger = {
 
 const applySettings = settings => {
   // load the debug setting
-  if (settings.debug.toLowerCase) {
+  if (settings.debug && settings.debug.toLowerCase) {
     state.isDebug = settings.debug.toLowerCase() === "true";
   } else {
     state.isDebug = settings.debug;
