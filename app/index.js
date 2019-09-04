@@ -3,6 +3,7 @@ import { peerSocket } from "messaging";
 import { vibration } from "haptics";
 import { me } from "appbit";
 import { display } from "display";
+import { writeFileSync, readFileSync } from "fs";
 
 import { addTouch } from "./lib-fitbit-ui"
 
@@ -23,12 +24,31 @@ const state = {
   }
 };
 
+const log = [];
 const uiDebug = document.getElementById("console-debug");
-const uiLogOut = msg => {
+const clearLog = () => {
+  uiLogOut("clearing log");
+  log.length = 0;
+  uiDebug.text = "";
+  uiLogOut("log cleared");
+};
+const writeLog = (logFile = "./log.txt") => {
+  writeFileSync(logFile, log, "json");
+};
+const readLog = (logFile = "./log.txt") => {
+  try {
+    const fileLog = readFileSync(logFile, "json");
+    fileLog.forEach(l => uiLogOut(l.message, l.timestamp))
+  } catch (error) {
+    logger.error(`Could not open logfile: ${logFile} - ${error}`)
+  }
+};
+const uiLogOut = (msg, ts = null) => {
   const nl = "\n";
   console.log(msg);
-  const timestamp = new Date().toLocaleTimeString();
+  const timestamp = ts ? ts : new Date().toTimeString();
   const currentText = uiDebug.text;
+  log.push({timestamp: timestamp, message: msg});
   uiDebug.text = `[${timestamp}]${nl}`;
   uiDebug.text += `${msg}${nl}`;
   uiDebug.text += currentText;
@@ -43,7 +63,10 @@ const logger = {
 const configureApp = () => {
   // TODO: Configure logging
   // TODO: Configure state?
-
+  me.addEventListener("unload", () => {
+    uiLogOut("-- Shutting down");
+    writeLog();
+  });
   logger.debug("disable app timeout");
   me.appTimeoutEnabled = false;
 };
@@ -171,6 +194,10 @@ const setupButtons = () => {
     if (e.key === "down") {
       e.preventDefault();
       rotateTile(state);
+    }
+    if (e.key === "back" && state.visibleTile === "debug") {
+      e.preventDefault();
+      clearLog();
     }
   };
 };
@@ -347,13 +374,14 @@ const apiLogin = () => {
 };
 
 const init = () => {
-  logger.debug("Init start");
+  readLog();
+  logger.debug("--Starting up");
   configureApp();
   setupPeerConnection();
   setupButtons();
   setupTouch();
   ensureConnect();
-  logger.debug("Init complete");
+  logger.debug("--Start up complete");
 };
 init();
 
