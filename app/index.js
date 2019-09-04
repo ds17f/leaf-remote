@@ -3,7 +3,7 @@ import { peerSocket } from "messaging";
 import { vibration } from "haptics";
 import { me } from "appbit";
 import { display } from "display";
-import { writeFileSync, readFileSync } from "fs";
+import { writeFileSync, readFileSync, unlinkSync } from "fs";
 
 import { addTouch } from "./lib-fitbit-ui"
 
@@ -15,6 +15,7 @@ const icons = {
   failed: 185
 };
 const state = {
+  isDebug: true,
   isRunning: false,
   visibleTile: "console",
   companionConnect: "notConnected",
@@ -27,18 +28,25 @@ const state = {
 const log = [];
 const uiDebug = document.getElementById("console-debug");
 const clearLog = () => {
-  uiLogOut("clearing log");
   log.length = 0;
   uiDebug.text = "";
-  uiLogOut("log cleared");
+};
+const deleteLog = (logFile = "./log.txt") => {
+  unlinkSync(logFile);
 };
 const writeLog = (logFile = "./log.txt") => {
   writeFileSync(logFile, log, "json");
 };
 const readLog = (logFile = "./log.txt") => {
+  if (! state.isDebug) {
+    return;
+  }
   try {
     const fileLog = readFileSync(logFile, "json");
-    fileLog.forEach(l => uiLogOut(l.message, l.timestamp))
+    const currentLog = log.splice(0);
+    clearLog();
+    fileLog.forEach(l => logger.debug(l.message, l.timestamp))
+    currentLog.forEach(l => logger.debug(l.message, l.timestamp))
   } catch (error) {
     logger.error(`Could not open logfile: ${logFile} - ${error}`)
   }
@@ -47,11 +55,15 @@ const uiLogOut = (msg, ts = null) => {
   const nl = "\n";
   console.log(msg);
   const timestamp = ts ? ts : new Date().toTimeString();
-  const currentText = uiDebug.text;
   log.push({timestamp: timestamp, message: msg});
-  uiDebug.text = `[${timestamp}]${nl}`;
-  uiDebug.text += `${msg}${nl}`;
-  uiDebug.text += currentText;
+  try {
+    const currentText = uiDebug.text;
+    uiDebug.text = `[${timestamp}]${nl}`;
+    uiDebug.text += `${msg}${nl}`;
+    uiDebug.text += currentText;
+  } catch (error) {
+    console.error(`Failed to write log message to console: ${msg}`)
+  }
 };
 const logger = {
   log: uiLogOut,
@@ -60,12 +72,41 @@ const logger = {
   debug: uiLogOut
 };
 
+const applySettings = settings => {
+  // load the debug setting
+  if (settings.debug.toLowerCase) {
+    state.isDebug = settings.debug.toLowerCase() === "true";
+  } else {
+    state.isDebug = settings.debug;
+  }
+};
+const writeSettings = (settingsFile = "./settings.json") => {
+  const settings = {
+    debug: state.isDebug
+  };
+  writeFileSync(settingsFile, settings, "json");
+};
+const readSettings = (settingsFile = "./settings.json") => {
+  logger.debug("reading settings");
+  try {
+    const settings = readFileSync(settingsFile, "json");
+    applySettings(settings);
+  } catch (error) {
+    logger.error(`Could not open settingsFile: ${settingsFile} - ${error}`)
+  }
+};
+
 const configureApp = () => {
   // TODO: Configure logging
   // TODO: Configure state?
   me.addEventListener("unload", () => {
-    uiLogOut("-- Shutting down");
-    writeLog();
+    logger.debug("---- Shutting down ----");
+    writeSettings();
+    if (state.isDebug) {
+      writeLog();
+    } else {
+      deleteLog();
+    }
   });
   logger.debug("disable app timeout");
   me.appTimeoutEnabled = false;
@@ -198,6 +239,7 @@ const setupButtons = () => {
     if (e.key === "back" && state.visibleTile === "debug") {
       e.preventDefault();
       clearLog();
+      logger.debug("log cleared");
     }
   };
 };
@@ -360,6 +402,10 @@ const parseCompanionMessage = (currentState, data) => {
       logger.debug(data.message);
       break;
     }
+    case "SETTINGS":
+      applySettings(data.settings);
+      writeSettings(data.settings);
+      break;
     default:
       logger.error(`Unknown companion message type: ${JSON.stringify(data)}`);
       break;
@@ -374,14 +420,15 @@ const apiLogin = () => {
 };
 
 const init = () => {
+  logger.debug("---- Starting up ----");
+  readSettings();
   readLog();
-  logger.debug("--Starting up");
   configureApp();
   setupPeerConnection();
   setupButtons();
   setupTouch();
   ensureConnect();
-  logger.debug("--Start up complete");
+  logger.debug("Start up complete");
 };
 init();
 

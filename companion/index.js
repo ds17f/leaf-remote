@@ -1,6 +1,6 @@
 import { peerSocket } from "messaging";
 import { settingsStorage } from "settings";
-import { me } from "companion"
+import { me } from "companion";
 
 console.log(`username: ${settingsStorage.getItem("username")}`);
 console.log(`password: ${settingsStorage.getItem("password")}`);
@@ -12,6 +12,12 @@ const sendMessage = (data) => {
   } catch (error) {
     console.log(`couldn't send "${JSON.stringify(data)}": ${error}`)
   }
+};
+const sendSettings = () => {
+  const settings = {
+    debug: settingsStorage.getItem("debug")
+  };
+  sendMessage({type: "SETTINGS", settings: settings });
 };
 
 if (me.launchReasons.peerAppLaunched) {
@@ -58,6 +64,7 @@ peerSocket.onmessage = (evt) => {
 peerSocket.onopen = () => {
   // Ready to send or receive messages
   console.log("Ready to send/receive");
+  sendSettings();
   sendMessage({type: "CONNECT", action: "BEGIN"});
 };
 
@@ -70,3 +77,6 @@ const nissanLogin = () => {
   }, 5000);
 };
 
+settingsStorage.onchange = () => {
+  sendSettings();
+};

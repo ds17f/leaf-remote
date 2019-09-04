@@ -16,6 +16,16 @@ function settingsComponent(props) {
       </Text>
       <TextInput label="username" settingsKey="username"/>
       <TextInput label="password" settingsKey="password" type="password" />
+      <Section
+        title={
+          <Text bold align="center">
+            Debugging
+          </Text>
+        }
+      />
+      <Toggle
+        label="Debug Mode"
+        settingsKey="debug" />
     </Page>
   );
 }
