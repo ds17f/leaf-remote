@@ -125,6 +125,20 @@ const sendMessage = data => {
   }
   return false;
 };
+const sendAPIRequest = currentState => {
+  switch (currentState.visibleTile) {
+    case "acOn":
+      sendMessage({type: "API", action: "AC_ON"});
+      updateConsole(currentState, "Sending Climate Start Request", "Climate Start");
+      break;
+    case "acOff":
+      sendMessage({type: "API", action: "AC_OFF"});
+      updateConsole(currentState, "Sending Climate Stop Request", "Climate Stop");
+      break;
+    default:
+      break
+  }
+};
 
 const isPeerConnected = () => {
   return peerSocket.readyState === peerSocket.OPEN;
@@ -271,11 +285,11 @@ const powerUp = currentState => {
     if (iter >= 8) {
       clearInterval(f);
       powerMask.width = 0;
-      currentState.isRunning = null;
-      currentState.console.headText = "Complete";
-      currentState.console.bodyText= "I'm done";
+      // currentState.isRunning = null;
+      // currentState.console.headText = "Complete";
+      // currentState.console.bodyText= "I'm done";
       updateUI(currentState);
-      vibration.start("nudge");
+      // vibration.start("nudge");
       return;
     }
     if (iter >= 6) {
@@ -295,18 +309,23 @@ const powerUp = currentState => {
 const fireButton = currentState => {
   if (checkPeerConnection(currentState)) {
     if ( ! currentState.isRunning ) {
-    if (sendMessage("GO")) {
-      currentState.isRunning = powerUp(currentState);
-      currentState.console.headText = "Run Me";
-      currentState.console.bodyText = "I'm running";
+      sendAPIRequest(currentState);
       currentState.visibleTile = "console";
-      logger.debug("start running");
-      vibration.start("confirmation");
       updateUI(currentState);
+
+
+      // if (sendMessage("GO")) {
+      //   currentState.isRunning = powerUp(currentState);
+      //   currentState.console.headText = "Run Me";
+      //   currentState.console.bodyText = "I'm running";
+      //   currentState.visibleTile = "console";
+      //   logger.debug("start running");
+      //   vibration.start("confirmation");
+      //   updateUI(currentState);
+      // }
+    } else {
+      logger.debug("already running")
     }
-  } else {
-    logger.debug("already running")
-  }
   }
 };
 
@@ -374,14 +393,15 @@ const parseCompanionMessage = (currentState, data) => {
           updateConsole(currentState, "Logged in successfully");
           break;
         case "AC_ON":
-          currentState.console.headText = "Start AC";
-          updateConsole(currentState, "Request AC Start");
+          updateConsole(currentState, "Climate Start Initiated");
+          powerUp(currentState);
           break;
         case "AC_SUCCESS":
-          updateConsole(currentState, "AC Turned ON");
+          updateConsole(currentState, "Climate Started Successfully");
           break;
         case "AC_POLLING":
-          updateConsole(currentState, "Checking AC Start Status");
+          updateConsole(currentState, `Waiting for Climate Start Status: ${data.loop}`);
+          powerUp(currentState);
           break;
         default:
           logger.error(`Unknown api action: ${data.action}`);
