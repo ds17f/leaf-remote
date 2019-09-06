@@ -128,8 +128,9 @@ const sendMessage = data => {
 const sendAPIRequest = currentState => {
   switch (currentState.visibleTile) {
     case "acOn":
-      sendMessage({type: "API", action: "AC_ON"});
+      // sendMessage({type: "API", action: "LOGIN"});
       updateConsole(currentState, "Sending Climate Start Request", "Climate Start");
+      sendMessage({type: "API", action: "AC_ON"});
       break;
     case "acOff":
       sendMessage({type: "API", action: "AC_OFF"});
@@ -385,6 +386,7 @@ const parseCompanionMessage = (currentState, data) => {
   switch (data.type) {
     case "API": {
       switch (data.action) {
+
         case "LOGIN_START":
           currentState.console.headText = "Connecting";
           updateConsole(currentState, "Logging in to Nissan");
@@ -392,16 +394,20 @@ const parseCompanionMessage = (currentState, data) => {
         case "LOGIN_COMPLETE":
           updateConsole(currentState, "Logged in successfully");
           break;
+        case "LOGIN_FAILED":
+          updateConsole(currentState, `Login failed: ${data.error}`);
+          break;
+
         case "AC_ON":
-          updateConsole(currentState, "Climate Start Initiated");
-          powerUp(currentState);
+          updateConsole(currentState, "Start sent, awaiting result.");
+          // powerUp(currentState);
           break;
         case "AC_SUCCESS":
           updateConsole(currentState, "Climate Started Successfully");
           break;
         case "AC_POLLING":
-          updateConsole(currentState, `Waiting for Climate Start Status: ${data.loop}`);
-          powerUp(currentState);
+          updateConsole(currentState, `Awaiting result, loop: ${data.loop}`);
+          // powerUp(currentState);
           break;
         default:
           logger.error(`Unknown api action: ${data.action}`);

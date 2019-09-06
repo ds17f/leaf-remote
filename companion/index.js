@@ -1,6 +1,20 @@
 import { peerSocket } from "messaging";
 import { settingsStorage } from "settings";
 
+import { sleep } from './utils';
+import { createSession, setLogger } from './carwings';
+
+// default to demo mode
+const isDemoMode = () => settingsStorage.getItem("demo").toLowerCase() === "true";
+
+const LOGIN_START = {type: "API", action: "LOGIN_START"};
+const LOGIN_COMPLETE = {type: "API", action: "LOGIN_COMPLETE"};
+const LOGIN_FAILED = {type: "API", action: "LOGIN_FAILED"};
+
+const AC_ON = {type: "API", action: "AC_ON"};
+const AC_POLLING = {type: "API", action: "AC_POLLING"};
+const AC_SUCCESS = {type: "API", action: "AC_SUCCESS"};
+
 const logger = console;
 logger.debug = m => console.log(m);
 
@@ -19,29 +33,20 @@ const sendSettings = () => {
   sendMessage({type: "SETTINGS", settings: settings });
 };
 
-const parseAPIMessage = action => {
+const parseAPIMessage = async action => {
   let timer = null;
   let loops = 0;
   const MAX_LOOPS = 3;
 
   switch(action) {
     case "LOGIN":
-      nissanLogin();
+      await nissanLogin();
       break;
     case "AC_ON":
-      sendMessage({type: "API", action: "AC_ON"});
-      logger.debug("simulate AC_ON");
-      timer = setInterval(() => {
-        logger.debug(`loop: ${loops}`);
-        if (loops >= MAX_LOOPS ){
-          clearInterval(timer);
-          loops = 0;
-          sendMessage({type: "API", action: "AC_SUCCESS"});
-          return true;
-        }
-        loops += 1;
-        sendMessage({type: "API", action: "AC_POLLING", loop: loops});
-      }, 10000);
+      await startAC();
+      break;
+    case "AC_OFF":
+      logger.debug(`demo: ${isDemoMode()}`);
       break;
     default:
       logger.error(`Unknown API Action: ${action}`);
@@ -49,10 +54,10 @@ const parseAPIMessage = action => {
   }
 
 };
-const parsePeerMessage = data => {
+const parsePeerMessage = async data => {
   switch (data.type) {
     case "API":
-      parseAPIMessage(data.action);
+      await parseAPIMessage(data.action);
       break;
     default:
       logger.error(`Unknown message type: ${data.type}`)
@@ -61,9 +66,9 @@ const parsePeerMessage = data => {
 const setupPeerConnection = () => {
 
   // Listen for the onmessage event
-  peerSocket.onmessage = evt => {
+  peerSocket.onmessage = async evt => {
     console.log(`Received message: ${JSON.stringify(evt.data)}`);
-    parsePeerMessage(evt.data);
+    await parsePeerMessage(evt.data);
 
     // // Output the message to the console
     // if (evt.data.type === "API") {
@@ -106,6 +111,7 @@ const setupSettings = () => {
   logger.debug(`username: ${settingsStorage.getItem("username")}`);
   logger.debug(`password: ${settingsStorage.getItem("password")}`);
   logger.debug(`debug: ${settingsStorage.getItem("debug")}`);
+  logger.debug(`demo: ${settingsStorage.getItem("demo")}`);
   settingsStorage.onchange = () => {
     sendSettings();
   };
@@ -120,11 +126,105 @@ const init = () => {
 init();
 
 
-const nissanLogin = () => {
-  sendMessage({type: "API", action: "LOGIN_START"});
-  console.log("simulate login");
-  setTimeout(() => {
-    console.log("login complete");
-    sendMessage({type: "API", action: "LOGIN_COMPLETE"});
-  }, 5000);
+const nissanLogin = async () => {
+  if (isDemoMode()) {
+    logger.debug(`demo: ${isDemoMode()}`);
+    return await demo_nissanLogin();
+  }
+  const username = JSON.parse(settingsStorage.getItem("username")).name;
+  const password = JSON.parse(settingsStorage.getItem("password")).name;
+  console.log(`u: ${username}, p: ${password}`);
+  const session = createSession(username, password);
+
+  sendMessage(LOGIN_START);
+  try {
+    await session.connect();
+    sendMessage(LOGIN_COMPLETE);
+  } catch (error) {
+    const errMessage = Object.assign({error: error}, LOGIN_FAILED);
+    sendMessage(errMessage);
+    return null;
+  }
+
+  return session;
+};
+const startAC = async () => {
+  if (isDemoMode()) {
+    logger.debug(`demo: ${isDemoMode()}`);
+    return await demo_startAC();
+  }
+  const POLL_RESULT_INTERVAL = 10000
+  const session = await nissanLogin();
+
+  // START
+  const resultKey = await session.leafRemote.startClimateControl();
+  sendMessage(AC_ON);
+
+  let climateResult = await session.leafRemote.getStartClimateControlRequest(
+    resultKey
+  );
+
+  /* eslint-disable no-await-in-loop */
+  let loop = 1;
+  while (!climateResult) {
+    logger.warn(
+      `Climate start result not ready yet.  Sleeping: ${POLL_RESULT_INTERVAL /
+      1000} seconds`
+    );
+    sendMessage(Object.assign({loop: loop}, AC_POLLING));
+    await sleep(POLL_RESULT_INTERVAL);
+    climateResult = await session.leafRemote.getStartClimateControlRequest(
+      resultKey
+    );
+    //TODO: Consider a MAX_LOOP
+  }
+  // TODO: Check success/failure and return appropriate
+  sendMessage(AC_SUCCESS);
+  logger.warn("Climate Start Succeeded!!!");
+};
+
+
+const demo_nissanLogin = async () => {
+  const username = JSON.parse(settingsStorage.getItem("username")).name;
+  const password = JSON.parse(settingsStorage.getItem("password")).name;
+  console.log(`u: ${username}, p: ${password}`);
+  // const session = createSession(username, password);
+
+  sendMessage(LOGIN_START);
+  const factor = Math.random() * 100 % 5;
+  await sleep(1000 * factor);
+  const success = Math.random() * 10000 % 100;
+  // success 90% of the time
+  if (success <= 90) {
+    sendMessage(LOGIN_COMPLETE);
+  } else {
+    const errMessage = Object.assign({error: new Error("Failed because of random")}, LOGIN_FAILED);
+    sendMessage(errMessage);
+  }
+
+  return {};
+};
+
+const demo_startAC = async () => {
+  const POLL_RESULT_INTERVAL = 5000;
+  await demo_nissanLogin();
+
+  // Start
+  const factor = Math.random() * 100 % 5;
+  await sleep(1000 * factor);
+  sendMessage(AC_ON);
+
+  let loop = 0;
+  const MAX_LOOPS = Math.random() * 100 % 5;
+  const timer = setInterval(() => {
+    logger.debug(`loop: ${loop}`);
+    if (loop >= MAX_LOOPS ){
+      clearInterval(timer);
+      loop = 0;
+      sendMessage(AC_SUCCESS);
+      return true;
+    }
+    loop += 1;
+    sendMessage(Object.assign({loop: loop}, AC_POLLING));
+  }, POLL_RESULT_INTERVAL);
 };

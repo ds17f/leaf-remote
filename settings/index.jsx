@@ -26,6 +26,9 @@ function settingsComponent(props) {
       <Toggle
         label="Debug Mode"
         settingsKey="debug" />
+      <Toggle
+        label="Demo Mode"
+        settingsKey="demo" />
     </Page>
   );
 }
