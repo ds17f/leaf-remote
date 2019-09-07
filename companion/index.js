@@ -11,11 +11,17 @@ const LOGIN_START = {type: "API", action: "LOGIN_START"};
 const LOGIN_COMPLETE = {type: "API", action: "LOGIN_COMPLETE"};
 const LOGIN_FAILED = {type: "API", action: "LOGIN_FAILED"};
 
-const AC_ON = {type: "API", action: "AC_ON"};
-const AC_POLLING = {type: "API", action: "AC_POLLING"};
-const AC_SUCCESS = {type: "API", action: "AC_SUCCESS"};
-const AC_TIMEOUT = {type: "API", action: "AC_TIMEOUT"};
-const AC_FAILURE = {type: "API", action: "AC_FAILURE"};
+const AC_ON_START = {type: "API", action: "AC_ON_START"};
+const AC_ON_POLLING = {type: "API", action: "AC_ON_POLLING"};
+const AC_ON_SUCCESS = {type: "API", action: "AC_ON_SUCCESS"};
+const AC_ON_TIMEOUT = {type: "API", action: "AC_ON_TIMEOUT"};
+const AC_ON_FAILURE = {type: "API", action: "AC_ON_FAILURE"};
+
+const AC_OFF_START = {type: "API", action: "AC_OFF_START"};
+const AC_OFF_POLLING = {type: "API", action: "AC_OFF_POLLING"};
+const AC_OFF_SUCCESS = {type: "API", action: "AC_OFF_SUCCESS"};
+const AC_OFF_TIMEOUT = {type: "API", action: "AC_OFF_TIMEOUT"};
+const AC_OFF_FAILURE = {type: "API", action: "AC_OFF_FAILURE"};
 
 const logger = console;
 logger.debug = m => console.log(m);
@@ -49,7 +55,7 @@ const parseAPIMessage = async action => {
       await startAC();
       break;
     case "AC_OFF":
-      logger.debug(`demo: ${isDemoMode()}`);
+      await stopAC();
       break;
     default:
       logger.error(`Unknown API Action: ${action}`);
@@ -163,7 +169,7 @@ const startAC = async () => {
 
   // START
   const resultKey = await session.leafRemote.startClimateControl();
-  sendMessage(AC_ON);
+  sendMessage(AC_ON_START);
 
   let climateResult = await session.leafRemote.getStartClimateControlRequest(
     resultKey
@@ -182,40 +188,89 @@ const startAC = async () => {
     isTimeout = true;
   }, failureTimeoutSeconds * 1000);
 
-  while (!climateResult && !isTimeout) {
-    logger.warn(
-      `Climate start result not ready yet.  Sleeping: ${POLL_RESULT_INTERVAL /
-      1000} seconds`
-    );
-    sendMessage(Object.assign({loop: loop}, AC_POLLING));
-    await sleep(POLL_RESULT_INTERVAL);
-    climateResult = await session.leafRemote.getStartClimateControlRequest(
-      resultKey
-    );
-    //TODO: Consider a MAX_LOOP
-    loop += 1;
-  }
-  // TODO: Check success/failure and return appropriate
-  if (isTimeout) {
-    sendMessage(Object.assign({timeout: failureTimeoutSeconds}, AC_TIMEOUT));
+  try {
+    while (!climateResult && !isTimeout) {
+      logger.warn(
+        `Climate start result not ready yet.  Sleeping: ${POLL_RESULT_INTERVAL /
+        1000} seconds`
+      );
+      sendMessage(Object.assign({loop: loop}, AC_ON_POLLING));
+      await sleep(POLL_RESULT_INTERVAL);
+      climateResult = await session.leafRemote.getStartClimateControlRequest(
+        resultKey
+      );
+      //TODO: Consider a MAX_LOOP
+      loop += 1;
+    }
+    if (isTimeout) {
+      sendMessage(Object.assign({timeout: failureTimeoutSeconds}, AC_ON_TIMEOUT));
+      logger.warn("Climate Start Failed!!!");
+    } else {
+      console.debug(`climateResult: ${JSON.stringify(climateResult)}`);
+      sendMessage(AC_ON_SUCCESS);
+      logger.warn("Climate Start Succeeded!!!");
+    }
+  } catch (error) {
+    sendMessage(Object.assign({result: error}, AC_ON_FAILURE));
     logger.warn("Climate Start Failed!!!");
-  } else {
-    // TODO: We must check climateResult for this error and fail:
-    console.debug(`climateResult: ${JSON.stringify(climateResult)}`);
-    /*
-      {
-        "status": 200,
-        "responseFlag": "1",
-        "operationResult": "ELECTRIC_WAVE_ABNORMAL",
-        "timeStamp": "2019-09-07 14:37:00",
-        "hvacStatus": "0"
-      }
-     */
-    sendMessage(AC_SUCCESS);
-    logger.warn("Climate Start Succeeded!!!");
   }
 };
+const stopAC = async () => {
+  if (isDemoMode()) {
+    logger.debug(`demo: ${isDemoMode()}`);
+    return await demo_stopAC();
+  }
+  const POLL_RESULT_INTERVAL = 10000
+  const session = await nissanLogin();
 
+  // START
+  const resultKey = await session.leafRemote.stopClimateControl();
+  sendMessage(AC_ON_START);
+
+  let climateResult = await session.leafRemote.getStopClimateControlRequest(
+    resultKey
+  );
+
+  /* eslint-disable no-await-in-loop */
+  let loop = 1;
+  let isTimeout = false;
+
+  const failureTimeoutSeconds = settingsStorage.getItem("apiTimeout")
+    ? JSON.parse(settingsStorage.getItem("apiTimeout")).name
+    : 300;
+  console.log(`Timeout: ${failureTimeoutSeconds}`);
+
+  let timeout = setTimeout(() => {
+    isTimeout = true;
+  }, failureTimeoutSeconds * 1000);
+
+  try {
+    while (!climateResult && !isTimeout) {
+      logger.warn(
+        `Climate stop result not ready yet.  Sleeping: ${POLL_RESULT_INTERVAL /
+        1000} seconds`
+      );
+      sendMessage(Object.assign({loop: loop}, AC_OFF_POLLING));
+      await sleep(POLL_RESULT_INTERVAL);
+      climateResult = await session.leafRemote.getStopClimateControlRequest(
+        resultKey
+      );
+      //TODO: Consider a MAX_LOOP
+      loop += 1;
+    }
+    if (isTimeout) {
+      sendMessage(Object.assign({timeout: failureTimeoutSeconds}, AC_OFF_TIMEOUT));
+      logger.warn("Climate Stop Failed!!!");
+    } else {
+      console.debug(`climateResult: ${JSON.stringify(climateResult)}`);
+      sendMessage(AC_OFF_SUCCESS);
+      logger.warn("Climate Stop Succeeded!!!");
+    }
+  } catch (error) {
+    sendMessage(Object.assign({result: error}, AC_OFF_FAILURE));
+    logger.warn("Climate Stop Failed!!!");
+  }
+};
 
 const demo_nissanLogin = async () => {
   const username = JSON.parse(settingsStorage.getItem("username")).name;
@@ -237,7 +292,6 @@ const demo_nissanLogin = async () => {
 
   return {};
 };
-
 const demo_startAC = async () => {
   const POLL_RESULT_INTERVAL = 5000;
   await demo_nissanLogin();
@@ -245,7 +299,7 @@ const demo_startAC = async () => {
   // Start
   const factor = Math.random() * 100 % 5;
   await sleep(1000 * factor);
-  sendMessage(AC_ON);
+  sendMessage(AC_ON_START);
 
   let loop = 0;
   const MAX_LOOPS = Math.random() * 100 % 5;
@@ -254,10 +308,33 @@ const demo_startAC = async () => {
     if (loop >= MAX_LOOPS ){
       clearInterval(timer);
       loop = 0;
-      sendMessage(AC_SUCCESS);
+      sendMessage(AC_ON_SUCCESS);
       return true;
     }
     loop += 1;
-    sendMessage(Object.assign({loop: loop}, AC_POLLING));
+    sendMessage(Object.assign({loop: loop}, AC_ON_POLLING));
+  }, POLL_RESULT_INTERVAL);
+};
+const demo_stopAC = async () => {
+  const POLL_RESULT_INTERVAL = 5000;
+  await demo_nissanLogin();
+
+  // Start
+  const factor = Math.random() * 100 % 5;
+  await sleep(1000 * factor);
+  sendMessage(AC_OFF_START);
+
+  let loop = 0;
+  const MAX_LOOPS = Math.random() * 100 % 5;
+  const timer = setInterval(() => {
+    logger.debug(`loop: ${loop}`);
+    if (loop >= MAX_LOOPS ){
+      clearInterval(timer);
+      loop = 0;
+      sendMessage(AC_OFF_SUCCESS);
+      return true;
+    }
+    loop += 1;
+    sendMessage(Object.assign({loop: loop}, AC_OFF_POLLING));
   }, POLL_RESULT_INTERVAL);
 };

@@ -446,23 +446,42 @@ const parseCompanionMessage = (currentState, data) => {
           logger.error(`Login failed: ${data.error}`);
           break;
 
-        case "AC_ON":
+        case "AC_ON_START":
           logger.info("Start sent, awaiting result.");
           // powerUp(currentState);
           break;
-        case "AC_SUCCESS":
+        case "AC_ON_SUCCESS":
           logger.warn("Climate Started Successfully");
           break;
-        case "AC_TIMEOUT":
+        case "AC_ON_TIMEOUT":
           logger.warn(`Climate Start Failed after: ${data.timeout} seconds.`);
           break;
-        case "AC_FAILURE":
+        case "AC_ON_FAILURE":
           logger.warn(`Climate Start Failed with: ${data.result}.`);
           break;
-        case "AC_POLLING":
+        case "AC_ON_POLLING":
           logger.info(`Awaiting result, loop: ${data.loop}`);
           // powerUp(currentState);
           break;
+
+        case "AC_OFF_START":
+          logger.info("Stop sent, awaiting result.");
+          // powerUp(currentState);
+          break;
+        case "AC_OFF_SUCCESS":
+          logger.warn("Climate Stopped Successfully");
+          break;
+        case "AC_OFF_TIMEOUT":
+          logger.warn(`Climate Stop Failed after: ${data.timeout} seconds.`);
+          break;
+        case "AC_OFF_FAILURE":
+          logger.warn(`Climate Stop Failed with: ${data.result}.`);
+          break;
+        case "AC_OFF_POLLING":
+          logger.info(`Awaiting result, loop: ${data.loop}`);
+          // powerUp(currentState);
+          break;
+
         default:
           logger.error(`Unknown api action: ${data.action}`);
           break;
