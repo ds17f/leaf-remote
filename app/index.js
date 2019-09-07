@@ -444,7 +444,10 @@ const parseCompanionMessage = (currentState, data) => {
           logger.warn("Climate Started Successfully");
           break;
         case "AC_TIMEOUT":
-          logger.warn(`Climate Start Failed after: ${data.timeout}.`);
+          logger.warn(`Climate Start Failed after: ${data.timeout} seconds.`);
+          break;
+        case "AC_FAILURE":
+          logger.warn(`Climate Start Failed with: ${data.result}.`);
           break;
         case "AC_POLLING":
           logger.info(`Awaiting result, loop: ${data.loop}`);

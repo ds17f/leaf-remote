@@ -14,7 +14,7 @@ const LOGIN_FAILED = {type: "API", action: "LOGIN_FAILED"};
 const AC_ON = {type: "API", action: "AC_ON"};
 const AC_POLLING = {type: "API", action: "AC_POLLING"};
 const AC_SUCCESS = {type: "API", action: "AC_SUCCESS"};
-const AC_TIMEOUT = {type: "API", action: "AC_FAILURE"};
+const AC_TIMEOUT = {type: "API", action: "AC_TIMEOUT"};
 const AC_FAILURE = {type: "API", action: "AC_FAILURE"};
 
 const logger = console;
@@ -123,6 +123,7 @@ const init = () => {
   logger.debug("---- Start Companion ----");
   setupPeerConnection();
   setupSettings();
+  console.log(settingsStorage.getItem("apiTimeout"))
 };
 
 init();
@@ -169,7 +170,12 @@ const startAC = async () => {
   /* eslint-disable no-await-in-loop */
   let loop = 1;
   let isTimeout = false;
-  const failureTimeoutSeconds = 300;
+
+  const failureTimeoutSeconds = settingsStorage.getItem("apiTimeout")
+    ? JSON.parse(settingsStorage.getItem("apiTimeout")).name
+    : 300;
+  console.log(`Timeout: ${failureTimeoutSeconds}`);
+
   let timeout = setTimeout(() => {
     isTimeout = true;
   }, failureTimeoutSeconds * 1000);

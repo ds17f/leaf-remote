@@ -19,6 +19,14 @@ function settingsComponent(props) {
       <Section
         title={
           <Text bold align="center">
+            Options
+          </Text>
+        }
+      />
+      <TextInput label="API Timeout" settingsKey="apiTimeout" />
+      <Section
+        title={
+          <Text bold align="center">
             Debugging
           </Text>
         }
