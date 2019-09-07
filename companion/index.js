@@ -30,7 +30,8 @@ const sendMessage = (data) => {
 };
 const sendSettings = () => {
   const settings = {
-    debug: settingsStorage.getItem("debug")
+    debug: settingsStorage.getItem("debug"),
+    quiet: settingsStorage.getItem("quiet")
   };
   sendMessage({type: "SETTINGS", settings: settings });
 };
@@ -113,6 +114,7 @@ const setupSettings = () => {
   logger.debug(`username: ${settingsStorage.getItem("username")}`);
   logger.debug(`password: ${settingsStorage.getItem("password")}`);
   logger.debug(`debug: ${settingsStorage.getItem("debug")}`);
+  logger.debug(`quiet: ${settingsStorage.getItem("debug")}`);
   logger.debug(`demo: ${settingsStorage.getItem("demo")}`);
   settingsStorage.onchange = () => {
     sendSettings();

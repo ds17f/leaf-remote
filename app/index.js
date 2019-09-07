@@ -16,6 +16,7 @@ const icons = {
 };
 const state = {
   isDebug: true,
+  isQuiet: false,
   isRunning: false,
   visibleTile: "console",
   companionConnect: "notConnected",
@@ -38,7 +39,7 @@ const vibrateFailure = () => {
 };
 const vibrateInfo = () => {
   vibration.stop();
-  vibration.start("ping");
+  ! state.isQuiet && vibration.start("ping");
   display.poke();
 };
 const vibrateUi = () => {
@@ -126,10 +127,17 @@ const applySettings = settings => {
   } else {
     state.isDebug = settings.debug;
   }
+  if (settings.quiet && settings.quiet.toLowerCase) {
+    state.isQuiet = settings.quiet.toLowerCase() === "true";
+  } else {
+    state.isQuiet = settings.quiet;
+  }
+
 };
 const writeSettings = (settingsFile = "./settings.json") => {
   const settings = {
-    debug: state.isDebug
+    debug: state.isDebug,
+    quiet: state.isQuiet
   };
   writeFileSync(settingsFile, settings, "json");
 };
