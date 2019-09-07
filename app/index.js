@@ -25,6 +25,28 @@ const state = {
   }
 };
 
+const vibrateSuccess = (vibrateForSeconds = 3) => {
+  vibration.stop();
+  vibration.start("alert");
+  display.poke();
+  setTimeout(() => {
+    vibration.stop();
+  }, vibrateForSeconds * 1000);
+};
+const vibrateFailure = () => {
+  vibrateSuccess(10);
+};
+const vibrateInfo = () => {
+  vibration.stop();
+  vibration.start("ping");
+  display.poke();
+};
+const vibrateUi = () => {
+  vibration.stop();
+  vibration.start("ping");
+  display.poke();
+};
+
 const log = [];
 const uiDebug = document.getElementById("console-debug");
 const clearLog = () => {
@@ -51,9 +73,12 @@ const readLog = (logFile = "./log.txt") => {
     logger.error(`Could not open logfile: ${logFile} - ${error}`)
   }
 };
-const uiLogOut = (msg, ts = null) => {
+const uiInfoOut = (body) => {
+  state.console.bodyText = body;
+  updateUI(state);
+};
+const uiDebugOut = (msg, ts = null) => {
   const nl = "\n";
-  console.log(msg);
   const timestamp = ts ? ts : new Date().toTimeString();
   log.push({timestamp: timestamp, message: msg});
   try {
@@ -66,10 +91,32 @@ const uiLogOut = (msg, ts = null) => {
   }
 };
 const logger = {
-  log: uiLogOut,
-  info: uiLogOut,
-  error: uiLogOut,
-  debug: uiLogOut
+  error: (msg, ts) => {
+    console.error(msg);
+    uiDebugOut(msg, ts);
+    uiInfoOut(msg);
+    vibrateFailure();
+  },
+  warn: (msg, ts) => {
+    console.warn(msg);
+    uiDebugOut(msg, ts);
+    uiInfoOut(msg);
+    vibrateSuccess();
+  },
+  info: (msg, ts) => {
+    console.info(msg);
+    uiDebugOut(msg, ts);
+    uiInfoOut(msg);
+    vibrateInfo();
+  },
+  debug: (msg, ts) => {
+    console.log(msg);
+    uiDebugOut(msg, ts);
+  },
+  log: (msg, ts) => {
+    console.log(msg);
+    uiDebugOut(msg, ts);
+  }
 };
 
 const applySettings = settings => {
@@ -128,13 +175,14 @@ const sendMessage = data => {
 const sendAPIRequest = currentState => {
   switch (currentState.visibleTile) {
     case "acOn":
-      // sendMessage({type: "API", action: "LOGIN"});
-      updateConsole(currentState, "Sending Climate Start Request", "Climate Start");
+      currentState.console.headText = "Climate Start";
+      logger.info("Sending Climate Start Request");
       sendMessage({type: "API", action: "AC_ON"});
       break;
     case "acOff":
+      currentState.console.headText = "Climate Stop";
+      logger.info("Sending Climate Stop Request");
       sendMessage({type: "API", action: "AC_OFF"});
-      updateConsole(currentState, "Sending Climate Stop Request", "Climate Stop");
       break;
     default:
       break
@@ -150,7 +198,7 @@ const checkPeerConnection = currentState => {
   }
   updatePeerConnectUI(currentState);
   state.visibleTile = "console";
-  vibration.start("bump");
+  vibrateFailure();
   updateUI(currentState);
   return false
 };
@@ -195,7 +243,7 @@ const setupPeerConnection = () => {
   peerSocket.onopen = () => {
     updatePeerConnectUI(state);
     // notify that the connection is open
-    vibration.start("ping");
+    vibrateSuccess();
   };
 
   peerSocket.onerror = () => {
@@ -258,18 +306,15 @@ const setupButtons = () => {
     }
   };
 };
-const ensureConnect = () => {
+const ensureConnect = (timeOut = 10) => {
   setTimeout(() => {
     if (! isPeerConnected() ){
-      vibration.start("alert");
-      updateConsole(state, "Connection failed after 10 seconds");
-      setTimeout(() => {
-        vibration.stop();
-        logger.debug("enable app timeout");
-        me.appTimeoutEnabled = true;
-      }, 3000);
+      logger.error(`Connection failed after ${timeOut} seconds`);
+
+      logger.debug("enable app timeout");
+      me.appTimeoutEnabled = true;
     }
-  }, 10000)
+  }, timeOut * 1000)
 };
 
 const powerUp = currentState => {
@@ -347,7 +392,7 @@ const rotateTile = (currentState, forward = true) => {
     state.visibleTile = tiles[visibleTileIndex];
     updateUI(currentState);
     // bump the user
-    vibration.start("bump");
+    vibrateUi();
     return true;
   }
 };
@@ -360,20 +405,14 @@ const updatePeerConnectUI = currentState => {
   if (isPeerConnected()) {
     currentState.companionConnect = "connected";
     currentState.visibleTile = tiles[0];
-    updateConsole(currentState, "Peer socket is open");
+    logger.info("Peer socket is open");
   } else {
     if (currentState.companionConnect !== "failed") {
-      updateConsole(currentState, "Peer socket closed");
+      logger.error("Peer socket closed");
     }
     currentState.companionConnect = "failed";
     currentState.visibleTile = "console";
   }
-  updateUI(currentState);
-};
-const updateConsole = (currentState, body, head = null) => {
-  currentState.console.bodyText = body;
-  currentState.console.headText = head;
-  logger.debug(body);
   updateUI(currentState);
 };
 
@@ -388,25 +427,27 @@ const parseCompanionMessage = (currentState, data) => {
       switch (data.action) {
 
         case "LOGIN_START":
-          currentState.console.headText = "Connecting";
-          updateConsole(currentState, "Logging in to Nissan");
+          logger.info("Logging in to Nissan");
           break;
         case "LOGIN_COMPLETE":
-          updateConsole(currentState, "Logged in successfully");
+          logger.info("Logged in successfully");
           break;
         case "LOGIN_FAILED":
-          updateConsole(currentState, `Login failed: ${data.error}`);
+          logger.error(`Login failed: ${data.error}`);
           break;
 
         case "AC_ON":
-          updateConsole(currentState, "Start sent, awaiting result.");
+          logger.info("Start sent, awaiting result.");
           // powerUp(currentState);
           break;
         case "AC_SUCCESS":
-          updateConsole(currentState, "Climate Started Successfully");
+          logger.warn("Climate Started Successfully");
+          break;
+        case "AC_TIMEOUT":
+          logger.warn(`Climate Start Failed after: ${data.timeout}.`);
           break;
         case "AC_POLLING":
-          updateConsole(currentState, `Awaiting result, loop: ${data.loop}`);
+          logger.info(`Awaiting result, loop: ${data.loop}`);
           // powerUp(currentState);
           break;
         default:

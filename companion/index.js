@@ -14,6 +14,8 @@ const LOGIN_FAILED = {type: "API", action: "LOGIN_FAILED"};
 const AC_ON = {type: "API", action: "AC_ON"};
 const AC_POLLING = {type: "API", action: "AC_POLLING"};
 const AC_SUCCESS = {type: "API", action: "AC_SUCCESS"};
+const AC_TIMEOUT = {type: "API", action: "AC_FAILURE"};
+const AC_FAILURE = {type: "API", action: "AC_FAILURE"};
 
 const logger = console;
 logger.debug = m => console.log(m);
@@ -166,7 +168,13 @@ const startAC = async () => {
 
   /* eslint-disable no-await-in-loop */
   let loop = 1;
-  while (!climateResult) {
+  let isTimeout = false;
+  const failureTimeoutSeconds = 300;
+  let timeout = setTimeout(() => {
+    isTimeout = true;
+  }, failureTimeoutSeconds * 1000);
+
+  while (!climateResult && !isTimeout) {
     logger.warn(
       `Climate start result not ready yet.  Sleeping: ${POLL_RESULT_INTERVAL /
       1000} seconds`
@@ -177,10 +185,27 @@ const startAC = async () => {
       resultKey
     );
     //TODO: Consider a MAX_LOOP
+    loop += 1;
   }
   // TODO: Check success/failure and return appropriate
-  sendMessage(AC_SUCCESS);
-  logger.warn("Climate Start Succeeded!!!");
+  if (isTimeout) {
+    sendMessage(Object.assign({timeout: failureTimeoutSeconds}, AC_TIMEOUT));
+    logger.warn("Climate Start Failed!!!");
+  } else {
+    // TODO: We must check climateResult for this error and fail:
+    console.debug(`climateResult: ${JSON.stringify(climateResult)}`);
+    /*
+      {
+        "status": 200,
+        "responseFlag": "1",
+        "operationResult": "ELECTRIC_WAVE_ABNORMAL",
+        "timeStamp": "2019-09-07 14:37:00",
+        "hvacStatus": "0"
+      }
+     */
+    sendMessage(AC_SUCCESS);
+    logger.warn("Climate Start Succeeded!!!");
+  }
 };
 
 
