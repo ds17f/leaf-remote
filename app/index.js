@@ -39,8 +39,10 @@ const vibrateFailure = () => {
 };
 const vibrateInfo = () => {
   vibration.stop();
-  ! state.isQuiet && vibration.start("ping");
-  display.poke();
+  if ( ! state.isQuiet ) {
+    vibration.start("ping");
+    display.poke();
+  }
 };
 const vibrateUi = () => {
   vibration.stop();
