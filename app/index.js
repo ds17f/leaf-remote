@@ -526,7 +526,7 @@ const init = () => {
   setupPeerConnection();
   setupButtons();
   setupTouch();
-  // ensureConnect();
+  ensureConnect(20);
   logger.debug("Start up complete");
 };
 init();
