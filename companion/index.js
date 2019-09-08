@@ -4,8 +4,16 @@ import { settingsStorage } from "settings";
 import { sleep } from './utils';
 import { createSession, setLogger } from './carwings';
 
-// default to demo mode
-const isDemoMode = () => settingsStorage.getItem("demo").toLowerCase() === "true";
+// default to not demo mode
+const isDemoMode = () => {
+  const demo = settingsStorage.getItem("demo");
+  if (typeof demo === 'undefined' || demo === null){
+    return false;
+  }
+  return demo.toLowerCase
+    ? demo.toLowerCase() === 'true'
+    : demo
+};
 
 const LOGIN_START = {type: "API", action: "LOGIN_START"};
 const LOGIN_COMPLETE = {type: "API", action: "LOGIN_COMPLETE"};
