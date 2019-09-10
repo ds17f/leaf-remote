@@ -1,23 +1,48 @@
 import { settingsStorage } from "settings";
 import { logger } from "./logger";
 
-import { send, SETTINGS } from "messaging";
+import { SETTINGS, send as sendMessage } from "./messaging";
 
-export const build = () => {
+
+const getBoolSetting = settingName => {
+  const setting = settingsStorage.getItem(settingName);
+  logger.debug(`${settingName}: ${setting}`);
+  return JSON.parse(setting) || false;
+};
+
+const getTextSetting = settingName => {
+  const setting = settingsStorage.getItem(settingName);
+  logger.debug(`${settingName}: ${setting}`);
+  const parsedSetting = JSON.parse(setting);
+  return parsedSetting.name
+    ? parsedSetting.name
+    : parsedSetting
+};
+
+const build = () => {
   const settings = {
-    username: settingsStorage.getItem("username"),
-    password: settingsStorage.getItem("password"),
-    debug: settingsStorage.getItem("debug"),
-    quiet: settingsStorage.getItem("quiet"),
-    demo: settingsStorage.getItem("demo")
+    username: getTextSetting("username"),
+    password: getTextSetting("password"),
+    debug: getBoolSetting("debug"),
+    quiet: getBoolSetting("quiet"),
+    demo: getBoolSetting("demo")
   };
   logger.debug(`Settings: ${JSON.stringify(settings)}`);
   return settings;
 };
 
+export const send = () => {
+  // mask for removing settings we don't want to send
+  // list all the ones you don't want,
+  // the rest will be sent
+  const { username, password, ...rest} = build();
+  const settingsMessage = SETTINGS(rest);
+  sendMessage(settingsMessage);
+};
+
 export const setup = () => {
   settingsStorage.onchange = () => {
-    const settingsMessage = SETTINGS(build());
-    send(settingsMessage);
+    send();
   };
 };
+

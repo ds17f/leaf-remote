@@ -72,7 +72,7 @@ const init = () => {
   logger.debug("---- Start Companion ----");
 
   messaging.setupPeerConnection(() => {
-    messaging.send(messaging.SETTINGS(settings.build()));
+    settings.send();
     messaging.send(messaging.CONNECT_BEGIN());
   }, parsePeerMessage);
 
