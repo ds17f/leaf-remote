@@ -3,7 +3,6 @@ import { logger } from "./logger";
 
 export const CONNECT_BEGIN = () => ({type: "CONNECT", action: "BEGIN"});
 
-export const SETTINGS = settings => ({type: "SETTINGS", settings: settings });
 
 export const LOGIN_START = () => ({type: "API", action: "LOGIN_START"});
 export const LOGIN_COMPLETE = () => ({type: "API", action: "LOGIN_COMPLETE"});

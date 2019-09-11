@@ -1,8 +1,9 @@
 import { settingsStorage } from "settings";
+
 import { logger } from "./logger";
+import { send as sendMessage } from "./messaging";
 
-import { SETTINGS, send as sendMessage } from "./messaging";
-
+export const SETTINGS = settings => ({type: "SETTINGS", settings: settings });
 
 const getBoolSetting = settingName => {
   const setting = settingsStorage.getItem(settingName);
