@@ -20,20 +20,14 @@ export const AC_OFF_TIMEOUT = timeout => ({type: "API", action: "AC_OFF_TIMEOUT"
 export const AC_OFF_FAILURE = error => ({type: "API", action: "AC_OFF_FAILURE", result: error});
 
 
-export const setupPeerConnection = (onOpen, onMessage) => {
-  // Listen for the onopen event
-  peerSocket.onopen = () => {
-    // Ready to send or receive messages
+export const init = () => {
+  peerSocket.addEventListener('open', () => {
     logger.debug("Ready to send/receive");
-    onOpen();
-  };
+  });
 
-  // Listen for the onmessage event
-  peerSocket.onmessage = async evt => {
+  peerSocket.addEventListener('message', (evt) => {
     logger.debug(`Received message: ${JSON.stringify(evt.data)}`);
-    await onMessage(evt.data);
-  };
-
+  });
 };
 
 export const send = (data) => {

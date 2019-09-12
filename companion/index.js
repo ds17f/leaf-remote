@@ -61,10 +61,11 @@ const parsePeerMessage = async data => {
 const init = () => {
   logger.debug("---- Start Companion ----");
 
-  messaging.setupPeerConnection(() => {
-    messaging.send(messaging.CONNECT_BEGIN());
-  }, parsePeerMessage);
+  // messaging.setupPeerConnection(() => {
+  //   messaging.send(messaging.CONNECT_BEGIN());
+  // }, parsePeerMessage);
 
+  messaging.init();
   settings.init();
   console.log(settings.companion.apiTimeout)
 };
