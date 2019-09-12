@@ -23,6 +23,7 @@ export const AC_OFF_FAILURE = error => ({type: "API", action: "AC_OFF_FAILURE", 
 export const init = () => {
   peerSocket.addEventListener('open', () => {
     logger.debug("Ready to send/receive");
+    send(CONNECT_BEGIN());
   });
 
   peerSocket.addEventListener('message', (evt) => {
