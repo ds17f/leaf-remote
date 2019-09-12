@@ -1,9 +1,13 @@
+import { peerSocket } from "messaging";
 import { settingsStorage } from "settings";
 
 import { logger } from "./logger";
-import { send as sendMessage } from "./messaging";
+import { send } from "./messaging";
 
-export const SETTINGS = settings => ({type: "SETTINGS", settings: settings });
+export let companion = {};
+export let app = {};
+
+const SETTINGS = settings => ({type: "SETTINGS", settings: settings });
 
 const getBoolSetting = settingName => {
   const setting = settingsStorage.getItem(settingName);
@@ -21,29 +25,35 @@ const getTextSetting = settingName => {
 };
 
 const build = () => {
-  const settings = {
+  companion = {
     username: getTextSetting("username"),
     password: getTextSetting("password"),
+    apiTimeout: getTextSetting("apiTimeout"),
+
     debug: getBoolSetting("debug"),
     quiet: getBoolSetting("quiet"),
     demo: getBoolSetting("demo")
   };
-  logger.debug(`Settings: ${JSON.stringify(settings)}`);
-  return settings;
-};
-
-export const send = () => {
-  // mask for removing settings we don't want to send
-  // list all the ones you don't want,
-  // the rest will be sent
-  const { username, password, ...rest} = build();
-  const settingsMessage = SETTINGS(rest);
-  sendMessage(settingsMessage);
-};
-
-export const setup = () => {
-  settingsStorage.onchange = () => {
-    send();
+  app = {
+    debug: companion.debug,
+    quiet: companion.quiet,
+    demo: companion.demo
   };
+};
+
+export const init = () => {
+  // build so a caller can access companion and app exports
+  build();
+
+  // when the settings change, update the settings and send them to the app
+  settingsStorage.addEventListener("change", () => {
+    build();
+    send(SETTINGS(app))
+  });
+
+  // when the socket opens, send the current app settings
+  peerSocket.addEventListener("open", () => {
+    send(SETTINGS(app))
+  });
 };
 

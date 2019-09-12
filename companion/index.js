@@ -8,16 +8,6 @@ import * as messaging from "./messaging";
 import * as settings from "./settings"
 import { logger } from "./logger";
 
-// default to not demo mode
-const isDemoMode = () => {
-  const demo = settingsStorage.getItem("demo");
-  if (typeof demo === 'undefined' || demo === null){
-    return false;
-  }
-  return demo.toLowerCase
-    ? demo.toLowerCase() === 'true'
-    : demo
-};
 
 const LOGIN_START = {type: "API", action: "LOGIN_START"};
 const LOGIN_COMPLETE = {type: "API", action: "LOGIN_COMPLETE"};
@@ -72,20 +62,19 @@ const init = () => {
   logger.debug("---- Start Companion ----");
 
   messaging.setupPeerConnection(() => {
-    settings.send();
     messaging.send(messaging.CONNECT_BEGIN());
   }, parsePeerMessage);
 
-  settings.setup();
-  console.log(settingsStorage.getItem("apiTimeout"))
+  settings.init();
+  console.log(settings.companion.apiTimeout)
 };
 
 init();
 
 
 const nissanLogin = async () => {
-  if (isDemoMode()) {
-    logger.debug(`demo: ${isDemoMode()}`);
+  if (settings.companion.demo) {
+    logger.debug(`demo: ${settings.companion.demo}`);
     return await demo_nissanLogin();
   }
   const username = JSON.parse(settingsStorage.getItem("username")).name;
@@ -106,8 +95,8 @@ const nissanLogin = async () => {
   return session;
 };
 const startAC = async () => {
-  if (isDemoMode()) {
-    logger.debug(`demo: ${isDemoMode()}`);
+  if (settings.companion.demo) {
+    logger.debug(`demo: ${settings.companion.demo}`);
     return await demo_startAC();
   }
   const POLL_RESULT_INTERVAL = 10000
@@ -162,8 +151,8 @@ const startAC = async () => {
   }
 };
 const stopAC = async () => {
-  if (isDemoMode()) {
-    logger.debug(`demo: ${isDemoMode()}`);
+  if (settings.companion.demo) {
+    logger.debug(`demo: ${settings.companion.demo}`);
     return await demo_stopAC();
   }
   const POLL_RESULT_INTERVAL = 10000
