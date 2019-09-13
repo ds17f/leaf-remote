@@ -15,20 +15,24 @@ const getBoolSetting = settingName => {
   return JSON.parse(setting) || false;
 };
 
-const getTextSetting = settingName => {
+const getTextSetting = (settingName, defaultVal = "") => {
   const setting = settingsStorage.getItem(settingName);
-  logger.debug(`${settingName}: ${setting}`);
+  logger.debug(`${settingName}: ${setting}, default: ${defaultVal}`);
   const parsedSetting = JSON.parse(setting);
+  if ( ! parsedSetting ) {
+    return defaultVal;
+  }
   return parsedSetting.name
     ? parsedSetting.name
-    : parsedSetting
+    : defaultVal
 };
 
 const build = () => {
   companion = {
     username: getTextSetting("username"),
     password: getTextSetting("password"),
-    apiTimeout: getTextSetting("apiTimeout"),
+    apiTimeout: getTextSetting("apiTimeout", 300),
+    apiPollInterval: getTextSetting("apiPollInterval", 10),
 
     debug: getBoolSetting("debug"),
     quiet: getBoolSetting("quiet"),

@@ -2,7 +2,8 @@ import { peerSocket } from "messaging";
 import { settingsStorage } from "settings";
 
 import { sleep } from './utils';
-import { createSession, setLogger } from './carwings';
+import { createSession, setLogger } from './carwings/carwings';
+import { startAC } from "./carwings/startAc"
 
 import * as messaging from "./messaging";
 import * as settings from "./settings"
@@ -36,7 +37,7 @@ const parseAPIMessage = async action => {
       await nissanLogin();
       break;
     case "AC_ON":
-      await startAC();
+      await startAC(settings);
       break;
     case "AC_OFF":
       await stopAC();
@@ -60,14 +61,14 @@ const parsePeerMessage = async data => {
 
 const init = () => {
   logger.debug("---- Start Companion ----");
-
-  // messaging.setupPeerConnection(() => {
-  //   messaging.send(messaging.CONNECT_BEGIN());
-  // }, parsePeerMessage);
-
   messaging.init();
   settings.init();
-  console.log(settings.companion.apiTimeout)
+
+  // TODO: externalize this
+  peerSocket.addEventListener('message', async (evt) => {
+    logger.debug(`Received message: ${JSON.stringify(evt.data)}`);
+    await parsePeerMessage(evt.data)
+  });
 };
 
 init();
@@ -95,7 +96,7 @@ const nissanLogin = async () => {
 
   return session;
 };
-const startAC = async () => {
+const startAC_old = async () => {
   if (settings.companion.demo) {
     logger.debug(`demo: ${settings.companion.demo}`);
     return await demo_startAC();

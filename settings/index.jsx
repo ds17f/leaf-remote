@@ -24,6 +24,7 @@ function settingsComponent(props) {
         }
       />
       <TextInput label="API Timeout" settingsKey="apiTimeout" />
+      <TextInput label="API Poll Interval (seconds)" settingsKey="apiPollInterval" />
       <Section
         title={
           <Text bold align="center">
