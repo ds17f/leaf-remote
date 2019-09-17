@@ -2,29 +2,12 @@ import { peerSocket } from "messaging";
 import { settingsStorage } from "settings";
 
 import { sleep } from './utils';
-import { createSession, setLogger } from './carwings/carwings';
 import { startAC } from "./carwings/startAc"
+import { stopAC } from "./carwings/stopAc"
 
 import * as messaging from "./messaging";
 import * as settings from "./settings"
 import { logger } from "./logger";
-
-
-const LOGIN_START = {type: "API", action: "LOGIN_START"};
-const LOGIN_COMPLETE = {type: "API", action: "LOGIN_COMPLETE"};
-const LOGIN_FAILED = {type: "API", action: "LOGIN_FAILED"};
-
-const AC_ON_START = {type: "API", action: "AC_ON_START"};
-const AC_ON_POLLING = {type: "API", action: "AC_ON_POLLING"};
-const AC_ON_SUCCESS = {type: "API", action: "AC_ON_SUCCESS"};
-const AC_ON_TIMEOUT = {type: "API", action: "AC_ON_TIMEOUT"};
-const AC_ON_FAILURE = {type: "API", action: "AC_ON_FAILURE"};
-
-const AC_OFF_START = {type: "API", action: "AC_OFF_START"};
-const AC_OFF_POLLING = {type: "API", action: "AC_OFF_POLLING"};
-const AC_OFF_SUCCESS = {type: "API", action: "AC_OFF_SUCCESS"};
-const AC_OFF_TIMEOUT = {type: "API", action: "AC_OFF_TIMEOUT"};
-const AC_OFF_FAILURE = {type: "API", action: "AC_OFF_FAILURE"};
 
 
 const parseAPIMessage = async action => {
@@ -33,14 +16,11 @@ const parseAPIMessage = async action => {
   const MAX_LOOPS = 3;
 
   switch(action) {
-    case "LOGIN":
-      await nissanLogin();
-      break;
     case "AC_ON":
       await startAC(settings);
       break;
     case "AC_OFF":
-      await stopAC();
+      await stopAC(settings);
       break;
     default:
       logger.error(`Unknown API Action: ${action}`);
@@ -73,141 +53,6 @@ const init = () => {
 
 init();
 
-
-const nissanLogin = async () => {
-  if (settings.companion.demo) {
-    logger.debug(`demo: ${settings.companion.demo}`);
-    return await demo_nissanLogin();
-  }
-  const username = JSON.parse(settingsStorage.getItem("username")).name;
-  const password = JSON.parse(settingsStorage.getItem("password")).name;
-  console.log(`u: ${username}, p: ${password}`);
-  const session = createSession(username, password);
-
-  messaging.send(LOGIN_START);
-  try {
-    await session.connect();
-    messaging.send(LOGIN_COMPLETE);
-  } catch (error) {
-    const errMessage = Object.assign({error: error}, LOGIN_FAILED);
-    messaging.send(errMessage);
-    return null;
-  }
-
-  return session;
-};
-const startAC_old = async () => {
-  if (settings.companion.demo) {
-    logger.debug(`demo: ${settings.companion.demo}`);
-    return await demo_startAC();
-  }
-  const POLL_RESULT_INTERVAL = 10000
-  const session = await nissanLogin();
-
-  // START
-  const resultKey = await session.leafRemote.startClimateControl();
-  messaging.send(AC_ON_START);
-
-  let climateResult = await session.leafRemote.getStartClimateControlRequest(
-    resultKey
-  );
-
-  /* eslint-disable no-await-in-loop */
-  let loop = 1;
-  let isTimeout = false;
-
-  const failureTimeoutSeconds = settingsStorage.getItem("apiTimeout")
-    ? JSON.parse(settingsStorage.getItem("apiTimeout")).name
-    : 300;
-  console.log(`Timeout: ${failureTimeoutSeconds}`);
-
-  let timeout = setTimeout(() => {
-    isTimeout = true;
-  }, failureTimeoutSeconds * 1000);
-
-  try {
-    while (!climateResult && !isTimeout) {
-      logger.warn(
-        `Climate start result not ready yet.  Sleeping: ${POLL_RESULT_INTERVAL /
-        1000} seconds`
-      );
-      messaging.send(Object.assign({loop: loop}, AC_ON_POLLING));
-      await sleep(POLL_RESULT_INTERVAL);
-      climateResult = await session.leafRemote.getStartClimateControlRequest(
-        resultKey
-      );
-      //TODO: Consider a MAX_LOOP
-      loop += 1;
-    }
-    if (isTimeout) {
-      messaging.send(Object.assign({timeout: failureTimeoutSeconds}, AC_ON_TIMEOUT));
-      logger.warn("Climate Start Failed!!!");
-    } else {
-      console.debug(`climateResult: ${JSON.stringify(climateResult)}`);
-      messaging.send(AC_ON_SUCCESS);
-      logger.warn("Climate Start Succeeded!!!");
-    }
-  } catch (error) {
-    messaging.send(Object.assign({result: error}, AC_ON_FAILURE));
-    logger.warn("Climate Start Failed!!!");
-  }
-};
-const stopAC = async () => {
-  if (settings.companion.demo) {
-    logger.debug(`demo: ${settings.companion.demo}`);
-    return await demo_stopAC();
-  }
-  const POLL_RESULT_INTERVAL = 10000
-  const session = await nissanLogin();
-
-  // START
-  const resultKey = await session.leafRemote.stopClimateControl();
-  messaging.send(AC_ON_START);
-
-  let climateResult = await session.leafRemote.getStopClimateControlRequest(
-    resultKey
-  );
-
-  /* eslint-disable no-await-in-loop */
-  let loop = 1;
-  let isTimeout = false;
-
-  const failureTimeoutSeconds = settingsStorage.getItem("apiTimeout")
-    ? JSON.parse(settingsStorage.getItem("apiTimeout")).name
-    : 300;
-  console.log(`Timeout: ${failureTimeoutSeconds}`);
-
-  let timeout = setTimeout(() => {
-    isTimeout = true;
-  }, failureTimeoutSeconds * 1000);
-
-  try {
-    while (!climateResult && !isTimeout) {
-      logger.warn(
-        `Climate stop result not ready yet.  Sleeping: ${POLL_RESULT_INTERVAL /
-        1000} seconds`
-      );
-      messaging.send(Object.assign({loop: loop}, AC_OFF_POLLING));
-      await sleep(POLL_RESULT_INTERVAL);
-      climateResult = await session.leafRemote.getStopClimateControlRequest(
-        resultKey
-      );
-      //TODO: Consider a MAX_LOOP
-      loop += 1;
-    }
-    if (isTimeout) {
-      messaging.send(Object.assign({timeout: failureTimeoutSeconds}, AC_OFF_TIMEOUT));
-      logger.warn("Climate Stop Failed!!!");
-    } else {
-      console.debug(`climateResult: ${JSON.stringify(climateResult)}`);
-      messaging.send(AC_OFF_SUCCESS);
-      logger.warn("Climate Stop Succeeded!!!");
-    }
-  } catch (error) {
-    messaging.send(Object.assign({result: error}, AC_OFF_FAILURE));
-    logger.warn("Climate Stop Failed!!!");
-  }
-};
 
 const demo_nissanLogin = async () => {
   const username = JSON.parse(settingsStorage.getItem("username")).name;
