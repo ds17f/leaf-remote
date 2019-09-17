@@ -1,5 +1,6 @@
 import { sleepSeconds } from '../utils';
 import { createSession, setLogger } from './carwings';
+import { nissanLogin } from './login';
 
 import * as messaging from "../messaging";
 import { logger } from "../logger";
@@ -10,32 +11,16 @@ const AC_ON_SUCCESS = () => ({type: "API", action: "AC_ON_SUCCESS"});
 const AC_ON_TIMEOUT = () => ({type: "API", action: "AC_ON_TIMEOUT"});
 const AC_ON_FAILURE = error => ({type: "API", action: "AC_ON_FAILURE", result: error});
 
-
-const LOGIN_START = {type: "API", action: "LOGIN_START"};
-const LOGIN_COMPLETE = {type: "API", action: "LOGIN_COMPLETE"};
-const LOGIN_FAILED = {type: "API", action: "LOGIN_FAILED"};
-const nissanLogin = async (settings) => {
-  const session = createSession(settings.companion.username, settings.companion.password);
-
-  messaging.send(LOGIN_START);
-  try {
-    await session.connect();
-    messaging.send(LOGIN_COMPLETE);
-  } catch (error) {
-    const errMessage = Object.assign({error: error}, LOGIN_FAILED);
-    messaging.send(errMessage);
-    return null;
-  }
-
-  return session;
-};
-
 export const startAC = async (settings) => {
   if (settings.companion.demo) {
     logger.debug(`demo: ${settings.companion.demo}`);
     return;
   }
-  const session = await nissanLogin(settings);
+  const session = await nissanLogin(settings.companion.username, settings.companion.password);
+  if (! session.loggedIn) {
+    messaging.send(AC_ON_FAILURE("Login failed"));
+    return false;
+  }
 
   // START
   const resultKey = await session.leafRemote.startClimateControl();
