@@ -8,8 +8,8 @@ import { logger } from "../logger";
 const AC_ON_START = () => ({type: "API", action: "AC_ON_START"});
 const AC_ON_POLLING = loop => ({type: "API", action: "AC_ON_POLLING", loop: loop});
 const AC_ON_SUCCESS = () => ({type: "API", action: "AC_ON_SUCCESS"});
-const AC_ON_TIMEOUT = () => ({type: "API", action: "AC_ON_TIMEOUT"});
-const AC_ON_FAILURE = error => ({type: "API", action: "AC_ON_FAILURE", result: error});
+const AC_ON_TIMEOUT = (timeout) => ({type: "API", action: "AC_ON_TIMEOUT", timeout: timeout});
+const AC_ON_FAILURE = error => ({type: "API", action: "AC_ON_FAILURE", result: error.toString()});
 
 export const startAC = async (settings) => {
   if (settings.companion.demo) {
@@ -52,9 +52,10 @@ export const startAC = async (settings) => {
 
     // we have a climateResult or a timeout
     if (isTimeout) {
-      messaging.send(AC_ON_TIMEOUT());
+      messaging.send(AC_ON_TIMEOUT(settings.companion.apiTimeout));
       logger.warn("Climate Start Timed Out!!!");
     } else {
+      // TODO: Need to check results here to make sure that we actually succeeded
       logger.debug(`climateResult: ${JSON.stringify(climateResult)}`);
       messaging.send(AC_ON_SUCCESS());
       logger.warn("Climate Start Succeeded!!!");
