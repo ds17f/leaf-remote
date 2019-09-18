@@ -1,3 +1,5 @@
+import * as settings from './fitbit/settings';
+
 import document from "document";
 import { peerSocket } from "messaging";
 import { vibration } from "haptics";
@@ -132,23 +134,6 @@ const applySettings = settings => {
     updateUI(state);
   } else {
     state.isDemo = settings.demo;
-  }
-};
-const writeSettings = (settingsFile = "./settings.json") => {
-  const settings = {
-    debug: state.isDebug,
-    quiet: state.isQuiet,
-    demo: state.isDemo
-  };
-  writeFileSync(settingsFile, settings, "json");
-};
-const readSettings = (settingsFile = "./settings.json") => {
-  logger.debug("reading settings");
-  try {
-    const settings = readFileSync(settingsFile, "json");
-    applySettings(settings);
-  } catch (error) {
-    logger.error(`Could not open settingsFile: ${settingsFile} - ${error}`)
   }
 };
 
@@ -526,7 +511,9 @@ const apiLogin = () => {
 
 const init = () => {
   logger.debug("---- Starting up ----");
-  readSettings();
+
+  settings.init(applySettings);
+
   readLog();
   configureApp();
   setupPeerConnection();
