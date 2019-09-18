@@ -13,8 +13,6 @@
 <!--  </mask>-->
 
 
-
-
   <!-- The background, lay this down first -->
   <image href="background.png" class="background fill" />
 
@@ -71,4 +69,5 @@
     </use>
   </use>
 
+  <circle id="demo" />
 </svg>

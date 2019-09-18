@@ -17,6 +17,7 @@ const icons = {
 const state = {
   isDebug: true,
   isQuiet: false,
+  isDemo: false,
   isRunning: false,
   visibleTile: "console",
   companionConnect: "notConnected",
@@ -124,22 +125,20 @@ const logger = {
 
 const applySettings = settings => {
   // load the debug setting
-  if (settings.debug && settings.debug.toLowerCase) {
-    state.isDebug = settings.debug.toLowerCase() === "true";
+  state.isDebug = settings.debug;
+  state.isQuiet = settings.quiet;
+  if (state.isDemo !== settings.demo){
+    state.isDemo = settings.demo;
+    updateUI(state);
   } else {
-    state.isDebug = settings.debug;
+    state.isDemo = settings.demo;
   }
-  if (settings.quiet && settings.quiet.toLowerCase) {
-    state.isQuiet = settings.quiet.toLowerCase() === "true";
-  } else {
-    state.isQuiet = settings.quiet;
-  }
-
 };
 const writeSettings = (settingsFile = "./settings.json") => {
   const settings = {
     debug: state.isDebug,
-    quiet: state.isQuiet
+    quiet: state.isQuiet,
+    demo: state.isDemo
   };
   writeFileSync(settingsFile, settings, "json");
 };
@@ -241,10 +240,17 @@ const setConsoleText = currentState => {
     body.text = currentState.console.bodyText;
   }
 };
+const setDemoVisible = currentState => {
+  const demoIcon = document.getElementById("demo");
+  demoIcon.style.display = currentState.isDemo
+    ? "inline"
+    : "none";
+};
 const updateUI = currentState => {
   setVisibleTile(currentState);
   setCompanionIcon(currentState);
   setConsoleText(currentState);
+  setDemoVisible(currentState);
 };
 
 const setupPeerConnection = () => {

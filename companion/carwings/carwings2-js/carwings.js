@@ -462,7 +462,7 @@ export const createSession = (
     } catch (ex) {
       logger.warn(`HTTP Request Failed`);
       logger.error(ex);
-      return undefined;
+      throw ex;
     }
 
     /*
@@ -480,19 +480,17 @@ export const createSession = (
      */
     if (!res.data || typeof res.data === "string") {
       logger.error("Invalid JSON returned");
-      return undefined;
+      throw new Error("Invalid JSON returned");
     }
 
     if (res.data.message && res.data.message === "INVALID PARAMS") {
       logger.error(`carwings error ${res.data.message}, ${res.data.status}`);
-      return undefined;
+      throw new Error("INVALID PARAMS");
     }
 
     if (res.data.ErrorMessage) {
-      logger.error(
-        `carwings error ${res.data.ErrorCode}, ${res.data.ErrorMessage}`
-      );
-      return undefined;
+      logger.error(`carwings error ${res.data.ErrorCode}, ${res.data.ErrorMessage}`);
+      throw new Error(`${res.data.ErrorCode},${res.data.ErrorMessage}`)
     }
 
     return res.data;
@@ -507,7 +505,6 @@ export const createSession = (
       RegionCode: session.regionCode,
       lg: "en-US"
     });
-
     const parsedInitial = parseCarwingsInitialAppResponse(initialAppResponse);
     const encryptedPassword = encryptBlowfishECB(
       parsedInitial.baseprm,

@@ -84,3 +84,10 @@
   fill: black;
   opacity: .9;
 }
+
+#demo {
+  cx: 145;
+  cy: 55;
+  r: 10;
+  fill: red
+}
