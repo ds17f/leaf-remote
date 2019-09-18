@@ -1,5 +1,5 @@
 import { createClimateAction, AC_ON } from "./acAction";
-import { registerAPIActionListener } from "../messaging";
+import { registerAPIActionListener } from "../../fitbit/messaging";
 
 const AC_ON_START = () => ({type: "API", action: "AC_ON_START"});
 const AC_ON_POLLING = loop => ({type: "API", action: "AC_ON_POLLING", loop: loop});

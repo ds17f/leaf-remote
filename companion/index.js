@@ -1,10 +1,10 @@
-import { logger } from "./logger";
+import { logger } from "./lib/logger";
 
-import * as startAc from "./carwings/startAc"
-import * as stopAc from "./carwings/stopAc"
+import * as startAc from "./carwings/climate/startAc"
+import * as stopAc from "./carwings/climate/stopAc"
 
-import * as messaging from "./messaging";
-import * as settings from "./settings"
+import * as messaging from "./fitbit/messaging";
+import * as settings from "./fitbit/settings"
 
 const init = () => {
   logger.debug("---- Start Companion ----");

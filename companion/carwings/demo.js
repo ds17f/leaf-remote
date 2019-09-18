@@ -1,7 +1,8 @@
 import {settingsStorage} from "settings";
-import * as messaging from "../messaging";
-import {sleep} from "../utils";
-import {logger} from "../logger";
+
+import * as messaging from "../fitbit/messaging";
+import {sleep} from "../lib/utils";
+import {logger} from "../lib/logger";
 
 const demo_nissanLogin = async () => {
   const username = JSON.parse(settingsStorage.getItem("username")).name;

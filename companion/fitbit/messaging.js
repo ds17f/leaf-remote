@@ -1,5 +1,5 @@
 import { peerSocket } from "messaging";
-import { logger } from "./logger";
+import { logger } from "../lib/logger";
 
 export const CONNECT_BEGIN = () => ({type: "CONNECT", action: "BEGIN"});
 

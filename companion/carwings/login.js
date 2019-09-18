@@ -1,5 +1,5 @@
-import { createSession } from './carwings';
-import * as messaging from "../messaging";
+import { createSession } from './carwings2-js/carwings';
+import * as messaging from "../fitbit/messaging";
 
 const LOGIN_START = () => ({type: "API", action: "LOGIN_START"});
 const LOGIN_COMPLETE = () => ({type: "API", action: "LOGIN_COMPLETE"});

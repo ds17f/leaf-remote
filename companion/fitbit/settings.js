@@ -1,8 +1,8 @@
 import { peerSocket } from "messaging";
 import { settingsStorage } from "settings";
 
-import { logger } from "./logger";
-import { send } from "./messaging";
+import { logger } from "../lib/logger";
+import { send } from "../fitbit/messaging";
 
 let companion = {};
 let app = {};

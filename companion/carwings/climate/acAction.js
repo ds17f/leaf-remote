@@ -1,9 +1,9 @@
-import * as messaging from "../messaging";
+import * as messaging from "../../fitbit/messaging";
 
-import { sleepSeconds } from '../utils';
-import { logger } from "../logger";
+import { sleepSeconds } from '../../lib/utils';
+import { logger } from "../../lib/logger";
 
-import { nissanLogin } from './login';
+import { nissanLogin } from '../login';
 
 export const AC_ON = "AC_ON";
 export const AC_OFF = "AC_OFF";
