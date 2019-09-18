@@ -4,8 +4,12 @@ import { settingsStorage } from "settings";
 import { logger } from "./logger";
 import { send } from "./messaging";
 
-export let companion = {};
-export let app = {};
+let companion = {};
+let app = {};
+
+export const getCompanion = () => {
+  return Object.assign({}, companion);
+};
 
 const SETTINGS = settings => ({type: "SETTINGS", settings: settings });
 

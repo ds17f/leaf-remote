@@ -5,19 +5,20 @@ import { logger } from "../logger";
 
 import { nissanLogin } from './login';
 
-export const AC_ON = "ON";
-export const AC_OFF = "OFF";
-export const createClimateAction = (ON_OR_OFF, BEGIN, POLL, SUCCESS, TIMEOUT, FAILURE) => {
-  return async (settings) => {
+export const AC_ON = "AC_ON";
+export const AC_OFF = "AC_OFF";
+export const createClimateAction = (getSettings, ON_OR_OFF, BEGIN, POLL, SUCCESS, TIMEOUT, FAILURE) => {
+  return async () => {
+    const settings = getSettings();
 
     // TODO: Demo mode???
-    if (settings.companion.demo) {
-      logger.debug(`demo: ${settings.companion.demo}`);
+    if (settings.demo) {
+      logger.debug(`demo: ${settings.demo}`);
       return;
     }
 
     // Login to nissan
-    const session = await nissanLogin(settings.companion.username, settings.companion.password);
+    const session = await nissanLogin(settings.username, settings.password);
     if (! session.loggedIn) {
       messaging.send(FAILURE("Login failed"));
       return false;
@@ -43,7 +44,7 @@ export const createClimateAction = (ON_OR_OFF, BEGIN, POLL, SUCCESS, TIMEOUT, FA
     // after apiTimeout seconds flip the isTimeout flag
     let timeout = setTimeout(
       () => isTimeout = true,
-      settings.companion.apiTimeout * 1000
+      settings.apiTimeout * 1000
     );
 
 
@@ -58,8 +59,8 @@ export const createClimateAction = (ON_OR_OFF, BEGIN, POLL, SUCCESS, TIMEOUT, FA
         // announce new loop and sleep
         loop += 1;
         messaging.send(POLL(loop));
-        logger.warn(`Climate ${climateActionDescription.toLowerCase()} result not ready yet.  Sleeping: ${settings.companion.apiPollInterval} seconds`);
-        await sleepSeconds(settings.companion.apiPollInterval);
+        logger.warn(`Climate ${climateActionDescription.toLowerCase()} result not ready yet.  Sleeping: ${settings.apiPollInterval} seconds`);
+        await sleepSeconds(settings.apiPollInterval);
 
         // get a promise for the new result
         climateResult = getClimateActionRequest(resultKey);
@@ -67,7 +68,7 @@ export const createClimateAction = (ON_OR_OFF, BEGIN, POLL, SUCCESS, TIMEOUT, FA
 
       // we have a climateResult or a timeout
       if (isTimeout) {
-        messaging.send(TIMEOUT(settings.companion.apiTimeout));
+        messaging.send(TIMEOUT(settings.apiTimeout));
         logger.warn(`Climate ${climateActionDescription} Timed Out!!!`);
       } else {
         // TODO: Need to check results here to make sure that we actually succeeded
