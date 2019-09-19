@@ -1,10 +1,9 @@
 import * as settings from './fitbit/settings';
+import * as vibration from './ui/vibration';
 
 import document from "document";
 import { peerSocket } from "messaging";
-import { vibration } from "haptics";
 import { me } from "appbit";
-import { display } from "display";
 import { writeFileSync, readFileSync, unlinkSync } from "fs";
 
 import { addTouch } from "./lib-fitbit-ui"
@@ -27,30 +26,6 @@ const state = {
     headText: null,
     bodyText: null
   }
-};
-
-const vibrateSuccess = (vibrateForSeconds = 3) => {
-  vibration.stop();
-  vibration.start("alert");
-  display.poke();
-  setTimeout(() => {
-    vibration.stop();
-  }, vibrateForSeconds * 1000);
-};
-const vibrateFailure = () => {
-  vibrateSuccess(10);
-};
-const vibrateInfo = () => {
-  vibration.stop();
-  if ( ! state.isQuiet ) {
-    vibration.start("ping");
-    display.poke();
-  }
-};
-const vibrateUi = () => {
-  vibration.stop();
-  vibration.start("ping");
-  display.poke();
 };
 
 const log = [];
@@ -101,19 +76,19 @@ const logger = {
     console.error(msg);
     uiDebugOut(msg, ts);
     uiInfoOut(msg);
-    vibrateFailure();
+    vibration.vibrateFailure();
   },
   warn: (msg, ts) => {
     console.warn(msg);
     uiDebugOut(msg, ts);
     uiInfoOut(msg);
-    vibrateSuccess();
+    vibration.vibrateSuccess();
   },
   info: (msg, ts) => {
     console.info(msg);
     uiDebugOut(msg, ts);
     uiInfoOut(msg);
-    vibrateInfo();
+    vibration.vibrateInfo(state.isQuiet);
   },
   debug: (msg, ts) => {
     console.log(msg);
@@ -192,7 +167,7 @@ const checkPeerConnection = currentState => {
   }
   updatePeerConnectUI(currentState);
   state.visibleTile = "console";
-  vibrateFailure();
+  vibration.vibrateFailure();
   updateUI(currentState);
   return false
 };
@@ -244,7 +219,7 @@ const setupPeerConnection = () => {
   peerSocket.onopen = () => {
     updatePeerConnectUI(state);
     // notify that the connection is open
-    vibrateSuccess();
+    vibration.vibrateSuccess();
   };
 
   peerSocket.onerror = () => {
@@ -393,7 +368,7 @@ const rotateTile = (currentState, forward = true) => {
     state.visibleTile = tiles[visibleTileIndex];
     updateUI(currentState);
     // bump the user
-    vibrateUi();
+    vibration.vibrateUi();
     return true;
   }
 };
@@ -493,8 +468,7 @@ const parseCompanionMessage = (currentState, data) => {
       break;
     }
     case "SETTINGS":
-      applySettings(data.settings);
-      writeSettings(data.settings);
+      // TODO: Remove this when we're ready as it's handled elsewhere
       break;
     default:
       logger.error(`Unknown companion message type: ${JSON.stringify(data)}`);
