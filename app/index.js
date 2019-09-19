@@ -1,6 +1,7 @@
 import * as settings from './fitbit/settings';
 import * as messaging from './fitbit/messaging'
 import * as vibration from './ui/vibration';
+import * as _tiles from './ui/tiles';
 
 import document from "document";
 import { peerSocket } from "messaging";
@@ -485,6 +486,10 @@ const init = () => {
   logger.debug("---- Starting up ----");
 
   settings.init(applySettings);
+  _tiles.init();
+
+
+  return;
 
   readLog();
   configureApp();
