@@ -1,4 +1,5 @@
 import * as settings from './fitbit/settings';
+import * as messaging from './fitbit/messaging'
 import * as vibration from './ui/vibration';
 
 import document from "document";
@@ -158,11 +159,8 @@ const sendAPIRequest = currentState => {
   }
 };
 
-const isPeerConnected = () => {
-  return peerSocket.readyState === peerSocket.OPEN;
-};
 const checkPeerConnection = currentState => {
-  if (isPeerConnected() ) {
+  if (messaging.isPeerConnected() ) {
     return true;
   }
   updatePeerConnectUI(currentState);
@@ -284,7 +282,7 @@ const setupButtons = () => {
 };
 const ensureConnect = (timeOut = 10) => {
   setTimeout(() => {
-    if (! isPeerConnected() ){
+    if (! messaging.isPeerConnected() ){
       logger.error(`Connection failed after ${timeOut} seconds`);
 
       logger.debug("enable app timeout");
@@ -378,7 +376,7 @@ const showDebugLog = currentState => {
   updateUI(currentState);
 };
 const updatePeerConnectUI = currentState => {
-  if (isPeerConnected()) {
+  if (messaging.isPeerConnected()) {
     currentState.companionConnect = "connected";
     currentState.visibleTile = tiles[0];
     logger.info("Peer socket is open");

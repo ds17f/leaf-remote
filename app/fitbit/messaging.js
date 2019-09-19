@@ -1,6 +1,10 @@
 import { peerSocket } from "messaging";
 import { logger } from "../lib/logger";
 
+export const isPeerConnected = () => {
+  return peerSocket.readyState === peerSocket.OPEN;
+};
+
 export const init = () => {
   peerSocket.addEventListener('open', () => {
     logger.debug("Ready to send/receive");
