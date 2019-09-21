@@ -10,6 +10,8 @@ import { writeFileSync, readFileSync, unlinkSync } from "fs";
 
 import { addTouch } from "./lib-fitbit-ui"
 
+import { logger, levels, setLogLevel } from "../common/logger";
+
 const tiles = ["acOn", "acOff", "console"];
 const icons = {
   notConnected: 80,
@@ -449,7 +451,8 @@ const apiLogin = () => {
 };
 
 const init = () => {
-  logger.debug("---- Starting up ----");
+  setLogLevel(levels.WARN);
+  logger.warn("---- Starting up ----");
 
   settings.init(applySettings);
   messaging.init();

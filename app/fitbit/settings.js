@@ -1,6 +1,6 @@
 import { peerSocket } from "messaging";
 import { readFileSync, writeFileSync } from "fs";
-import { logger } from '../lib/logger'
+import { logger } from "../../common/logger";
 
 const writeSettings = (settings, settingsFile = "./settings.json") => {
   logger.debug("writing settings");

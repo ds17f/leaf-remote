@@ -1,7 +1,7 @@
 import * as messaging from "../../fitbit/messaging";
 
 import { sleepSeconds } from '../../lib/utils';
-import { logger } from "../../lib/logger";
+import { logger } from "../../../common/logger";
 
 import { nissanLogin } from '../login';
 

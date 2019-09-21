@@ -1,5 +1,5 @@
 import { peerSocket } from "messaging";
-import { logger } from "../lib/logger";
+import { logger } from "../../common/logger";
 
 export const isPeerConnected = () => {
   return peerSocket.readyState === peerSocket.OPEN;
