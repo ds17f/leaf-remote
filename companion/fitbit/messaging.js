@@ -1,12 +1,13 @@
 import { peerSocket } from "messaging";
 import { logger } from "../lib/logger";
+import { CONNECT_BEGIN } from "../../common/actions/connect.js";
 
-export const CONNECT_BEGIN = () => ({type: "CONNECT", action: "BEGIN"});
+export const connectBeginMessage = () => CONNECT_BEGIN;
 
 export const init = () => {
   peerSocket.addEventListener('open', () => {
     logger.debug("Ready to send/receive");
-    send(CONNECT_BEGIN());
+    send(connectBeginMessage());
   });
 
   peerSocket.addEventListener('message', (evt) => {

@@ -23,3 +23,13 @@ export const send = (data) => {
     logger.error(`couldn't send "${JSON.stringify(data)}": ${error}`)
   }
 };
+
+export const registerActionListener = (msg, callback) => {
+  peerSocket.addEventListener('message', async (evt) => {
+    const { data } = evt;
+
+    if ( data.type === msg.type && data.action === msg.action ) {
+      await callback(data);
+    }
+  });
+};

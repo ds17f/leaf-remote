@@ -1,16 +1,19 @@
 import document from "document";
 import {peerSocket} from "messaging";
 
-import * as messaging from '../fitbit/messaging'
-import * as vibration from "./vibration";
+import { CONNECT_BEGIN } from "../../common/actions/connect.js";
 
-import { logger } from "app/lib/logger";
+import * as messaging from '../fitbit/messaging'
+import { logger } from "../lib/logger";
+
+import * as vibration from "./vibration";
 
 
 const tiles = ["acOn", "acOff", "console"];
 let visibleTile = "console";
 
 const setVisibleTile = newTile => {
+  logger.debug(`setVisibleTile: ${newTile}`);
   // hide all tiles
   document.getElementsByClassName('tile').forEach(t => {
     t.style.display = "none";
@@ -60,9 +63,19 @@ export const init = () => {
       e.preventDefault();
       rotateTile(true)
     }
+    if (e.key === "up") {
+      e.preventDefault();
+      setVisibleTile("console");
+    }
   });
 
-  peerSocket.addEventListener('message', (evt) => {
-    setVisibleTile("console");
+  messaging.registerActionListener(CONNECT_BEGIN, () => {
+    logger.debug(`tiles: Connect Begin Received`);
+    setVisibleTile("acOn");
   });
+
+  logger.debug(`tiles.init: isPeerConnected: ${messaging.isPeerConnected()}`);
+  if ( messaging.isPeerConnected() ) {
+    setVisibleTile("acOn");
+  }
 };

@@ -171,17 +171,6 @@ const checkPeerConnection = currentState => {
   return false
 };
 
-const setVisibleTile = currentState => {
-  // fade tiles
-  document.getElementsByClassName('tile').forEach(t => {
-    t.style.display = "none";
-  });
-
-  // fade in proper tile
-  document.getElementById(currentState.visibleTile).style.display = "inline";
-
-
-};
 const setCompanionIcon = currentState => {
   const iconMask = document.getElementById('icon-mask').getElementsByTagName('rect')[0];
   iconMask.x = icons[currentState.companionConnect];
@@ -206,7 +195,6 @@ const setDemoVisible = currentState => {
     : "none";
 };
 const updateUI = currentState => {
-  setVisibleTile(currentState);
   setCompanionIcon(currentState);
   setConsoleText(currentState);
   setDemoVisible(currentState);
@@ -350,28 +338,6 @@ const fireButton = currentState => {
   }
 };
 
-const rotateTile = (currentState, forward = true) => {
-  if ( checkPeerConnection(currentState) ) {
-    // if we're showing the debug console
-    // we'll just pretend we're showing the normal console
-    if (currentState.visibleTile === "debug") {
-      currentState.visibleTile = "console";
-    }
-    let visibleTileIndex = tiles.indexOf(state.visibleTile);
-    visibleTileIndex += forward ? 1 : -1;
-    if (visibleTileIndex >= tiles.length) {
-      visibleTileIndex = 0;
-    } else if (visibleTileIndex < 0) {
-      visibleTileIndex = tiles.length - 1;
-    }
-    state.visibleTile = tiles[visibleTileIndex];
-    updateUI(currentState);
-    // bump the user
-    vibration.vibrateUi();
-    return true;
-  }
-};
-
 const showDebugLog = currentState => {
   currentState.visibleTile = "debug";
   updateUI(currentState);
@@ -486,6 +452,7 @@ const init = () => {
   logger.debug("---- Starting up ----");
 
   settings.init(applySettings);
+  messaging.init();
   _tiles.init();
 
 
