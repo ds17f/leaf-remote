@@ -1,24 +1,23 @@
-import { logger } from "./lib/logger";
+import { logger, levels, setLogLevel } from "../common/logger";
 
-import * as startAc from "./carwings/climate/startAc"
-import * as stopAc from "./carwings/climate/stopAc"
+import * as messaging from "./_lib/fitbit/messaging";
+import * as settings from "./_lib/fitbit/settings"
 
-import * as messaging from "./fitbit/messaging";
-import * as settings from "./fitbit/settings"
-
+import * as listeners from './listeners';
 const init = () => {
-  logger.debug("---- Start Companion ----");
+  setLogLevel(levels.TRACE);
+  logger.warn("---- Start Companion ----");
 
   // plumbing
   messaging.init();
   settings.init();
+  setLogLevel(settings.getCompanion().logLevel);
 
-  // api
-  startAc.init(settings.getCompanion);
-  stopAc.init(settings.getCompanion);
+  // listeners
+  listeners.init(settings.getCompanion);
+
 
 };
 
 init();
-
 

@@ -1,12 +1,15 @@
 import { peerSocket } from "messaging";
-import { logger } from "../lib/logger";
 
-export const CONNECT_BEGIN = () => ({type: "CONNECT", action: "BEGIN"});
+import { logger } from "../../../common/logger";
+
+export const isPeerConnected = () => {
+  return peerSocket.readyState === peerSocket.OPEN;
+};
 
 export const init = () => {
+  logger.trace("messaging.init");
   peerSocket.addEventListener('open', () => {
     logger.debug("Ready to send/receive");
-    send(CONNECT_BEGIN());
   });
 
   peerSocket.addEventListener('message', (evt) => {
@@ -23,13 +26,12 @@ export const send = (data) => {
   }
 };
 
-export const registerAPIActionListener = (apiAction, callback) => {
+export const registerActionListener = (msg, callback) => {
   peerSocket.addEventListener('message', async (evt) => {
     const { data } = evt;
-    const { type, action } = data;
 
-    if ( type === "API" && action === apiAction) {
-      await callback();
+    if ( data.type === msg.type && data.action === msg.action ) {
+      await callback(data);
     }
   });
 };

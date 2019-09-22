@@ -1,7 +1,7 @@
 import { peerSocket } from "messaging";
 import { settingsStorage } from "settings";
 
-import { logger } from "../lib/logger";
+import { logger, levels } from "../../../common/logger";
 import { send } from "../fitbit/messaging";
 
 let companion = {};
@@ -38,14 +38,13 @@ const build = () => {
     apiTimeout: getTextSetting("apiTimeout", 300),
     apiPollInterval: getTextSetting("apiPollInterval", 10),
 
-    debug: getBoolSetting("debug"),
-    quiet: getBoolSetting("quiet"),
-    demo: getBoolSetting("demo")
+    demo: getBoolSetting("demo"),
+    logLevel: getBoolSetting("debug") ? levels.TRACE : levels.WARN
   };
   app = {
     debug: companion.debug,
-    quiet: companion.quiet,
-    demo: companion.demo
+    demo: companion.demo,
+    logLevel: companion.logLevel
   };
 };
 
