@@ -15,8 +15,8 @@ const init = () => {
   // listeners
   listeners.init(settings.getCompanion);
 
+
 };
 
 init();
-
 

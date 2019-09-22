@@ -6,6 +6,7 @@ import * as settings from './_lib/fitbit/settings';
 import * as messaging from './_lib/fitbit/messaging'
 
 import * as tiles from './ui/tiles';
+import * as peerConnection from './ui/peerConnection';
 import * as actions from './actions';
 import * as listeners from './listeners';
 
@@ -52,6 +53,7 @@ const init = () => {
   listeners.init();
 
   tiles.init();
+  peerConnection.init();
 
   ensureConnect(20);
 
