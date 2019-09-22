@@ -44,11 +44,16 @@ const ensureConnect = (timeOut = 10) => {
   }, timeOut * 1000)
 };
 
+const settingsUpdateHandler = settings => {
+  setLogLevel(settings.logLevel);
+  demo.toggleDemoFlag(settings.demo);
+};
+
 const init = () => {
   setLogLevel(levels.TRACE);
   logger.warn("---- Starting up ----");
 
-  settings.init((settings) => demo.toggleDemoFlag(settings.demo));
+  settings.init(settingsUpdateHandler);
   messaging.init();
   actions.init();
   listeners.init();

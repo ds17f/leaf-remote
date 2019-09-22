@@ -38,9 +38,6 @@ function settingsComponent(props) {
       <Toggle
         label="Demo Mode"
         settingsKey="demo" />
-      <Toggle
-        label="Quiet Mode"
-        settingsKey="quiet" />
     </Page>
   );
 }

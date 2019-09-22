@@ -11,6 +11,7 @@ const init = () => {
   // plumbing
   messaging.init();
   settings.init();
+  setLogLevel(settings.getCompanion().logLevel);
 
   // listeners
   listeners.init(settings.getCompanion);
