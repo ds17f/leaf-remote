@@ -14,25 +14,6 @@ import * as listeners from './listeners';
 
 import { logger, levels, setLogLevel } from "../common/logger";
 
-const icons = {
-  notConnected: 80,
-  connecting: 115,
-  connected: 150,
-  failed: 185
-};
-
-const setCompanionIcon = currentState => {
-  const iconMask = document.getElementById('icon-mask').getElementsByTagName('rect')[0];
-  iconMask.x = icons[currentState.companionConnect];
-};
-
-const setDemoVisible = currentState => {
-  const demoIcon = document.getElementById("demo");
-  demoIcon.style.display = currentState.isDemo
-    ? "inline"
-    : "none";
-};
-
 const ensureConnect = (timeOut = 10) => {
   setTimeout(() => {
     if (! messaging.isPeerConnected() ){

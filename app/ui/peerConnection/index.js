@@ -1,7 +1,12 @@
 import document from "document";
 import { peerSocket, CloseCode } from "messaging";
+import { me } from "appbit";
 
 import { logger } from "../../../common/logger";
+
+import * as messaging from "../../_lib/fitbit/messaging";
+
+import { consoleWarn, consoleError } from "../console";
 
 const icons = {
   notConnected: 80,
@@ -28,6 +33,20 @@ const showFailed = () => {
   setCompanionIcon(icons.failed);
 };
 
+const ensureConnect = (timeOut = 20) => {
+  logger.trace(`peerConnection.ensureConnect: ${timeOut} seconds`);
+  setTimeout(() => {
+    if (! messaging.isPeerConnected() ){
+      consoleError("Peer Connection", `Connection failed after ${timeOut} seconds`);
+
+      logger.debug("enable app timeout");
+      me.appTimeoutEnabled = true;
+    } else {
+      logger.debug(`peer is connected after: ${timeOut} seconds`);
+    }
+  }, timeOut * 1000)
+};
+
 export const init = () => {
   logger.trace("ui.peerConnect.init");
 
@@ -40,6 +59,7 @@ export const init = () => {
   // add a listener for when it opens
   peerSocket.addEventListener('open', (evt) => {
     showConnected();
+    consoleWarn("Peer Connection", "Peer is connected");
   });
 
   // add a listener for when it closes
@@ -49,5 +69,8 @@ export const init = () => {
       showFailed();
     }
   });
+
+  // ensure that we connect after some time
+  ensureConnect()
 
 };

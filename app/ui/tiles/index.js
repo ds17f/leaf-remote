@@ -23,7 +23,6 @@ const setVisibleTile = newTile => {
   document.getElementById(newTile).style.display = "inline";
 
   visibleTile = newTile;
-  vibration.vibrateUi();
 };
 
 export const getVisibleTile = () => {
@@ -58,6 +57,7 @@ const rotateTile = (forward = true) => {
   }
 
   setVisibleTile(nextTile(forward));
+  vibration.vibrateUi();
 
   return true;
 };
@@ -74,15 +74,19 @@ export const init = () => {
       switch (visibleTile) {
         case "acOn":
           setVisibleTile("console");
+          vibration.vibrateUi();
           break;
         case "acOff":
           setVisibleTile("console");
+          vibration.vibrateUi();
           break;
         case "console":
           setVisibleTile("console-debug");
+          vibration.vibrateUi();
           break;
         case "console-debug":
           setVisibleTile("console");
+          vibration.vibrateUi();
           break;
         default:
           break;
