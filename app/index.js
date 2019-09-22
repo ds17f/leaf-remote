@@ -1,16 +1,16 @@
-import * as settings from './fitbit/settings';
-import * as messaging from './fitbit/messaging'
+import * as settings from './_lib/fitbit/settings';
+import * as messaging from './_lib/fitbit/messaging'
 import * as vibration from './ui/vibration';
 import * as _tiles from './ui/tiles';
-import * as uiConsole from './ui/console';
-import * as actions from './actions'
+import * as actions from './actions';
+import * as listeners from './listeners';
 
 import document from "document";
 import { peerSocket } from "messaging";
 import { me } from "appbit";
 import { writeFileSync, readFileSync, unlinkSync } from "fs";
 
-import { addTouch } from "./lib-fitbit-ui"
+import { addTouch } from "./_lib/touch"
 
 import { logger, levels, setLogLevel } from "../common/logger";
 
@@ -453,15 +453,15 @@ const apiLogin = () => {
 };
 
 const init = () => {
-  setLogLevel(levels.DEBUG);
+  setLogLevel(levels.TRACE);
   logger.warn("---- Starting up ----");
 
   settings.init(applySettings);
   messaging.init();
   actions.init();
+  listeners.init();
 
   _tiles.init();
-  uiConsole.init();
 
   return;
 

@@ -1,12 +1,29 @@
-import { registerLoginActions } from "./actions/login";
-import { registerStartActions} from "./actions/startAc";
-import { registerStopActions } from "./actions/stopAc";
+import document from "document";
+import {logger} from "../../../common/logger";
+import * as vibration from '../vibration';
 
-import { logger } from "../../../common/logger";
+export const consoleInfo = (header, body) => {
+  const consoleHead = document.getElementById("console-head");
+  const consoleBody = document.getElementById("console-body");
+  logger.info(`${header} - ${body}`);
+  consoleHead.text = header;
+  consoleBody.text = body;
+};
 
-export const init = () => {
-  logger.debug("ui.console.init");
-  registerLoginActions();
-  registerStartActions();
-  registerStopActions();
+export const consoleWarn = (header, body) => {
+  const consoleHead = document.getElementById("console-head");
+  const consoleBody = document.getElementById("console-body");
+  logger.warn(`${header} - ${body}`);
+  consoleHead.text = header;
+  consoleBody.text = body;
+  vibration.vibrateSuccess()
+};
+
+export const consoleError = (header, body) => {
+  const consoleHead = document.getElementById("console-head");
+  const consoleBody = document.getElementById("console-body");
+  logger.error(`${header} - ${body}`);
+  consoleHead.text = header;
+  consoleBody.text = body;
+  vibration.vibrateFailure();
 };

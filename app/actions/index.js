@@ -1,7 +1,10 @@
-import * as acOn from './acOn';
-import * as acOff from './acOff';
+import * as acOn from './climate/acOn';
+import * as acOff from './climate/acOff';
+
+import { logger } from "../../common/logger";
 
 export const init = () => {
+  logger.trace("actions.init");
   acOn.init();
   acOff.init();
 };

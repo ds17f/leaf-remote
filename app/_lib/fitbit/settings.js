@@ -1,6 +1,7 @@
 import { peerSocket } from "messaging";
 import { readFileSync, writeFileSync } from "fs";
-import { logger } from "../../common/logger";
+
+import { logger } from "../../../common/logger";
 
 const writeSettings = (settings, settingsFile = "./settings.json") => {
   logger.debug("writing settings");
@@ -17,7 +18,7 @@ const readSettings = (settingsFile = "./settings.json") => {
 };
 
 export const init = settingsCallback => {
-  logger.debug("settings.init");
+  logger.trace("settings.init");
   // on init read the settings from a file
   const settings = readSettings();
   // and push them out to the callback so it can update

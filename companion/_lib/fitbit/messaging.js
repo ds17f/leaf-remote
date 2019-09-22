@@ -1,6 +1,6 @@
 import { peerSocket } from "messaging";
-import { logger } from "../../common/logger";
-import { CONNECT_BEGIN } from "../../common/actions/connect.js";
+import { logger } from "../../../common/logger";
+import { CONNECT_BEGIN } from "../../../common/messages/connect.js";
 
 export const connectBeginMessage = () => CONNECT_BEGIN;
 
@@ -30,6 +30,7 @@ export const registerActionListener = (msg, callback) => {
     const { type, action } = data;
 
     if ( type === msg.type && action === msg.action) {
+      logger.trace(`listener message: ${JSON.stringify(msg)}`);
       await callback(data);
     }
   });
