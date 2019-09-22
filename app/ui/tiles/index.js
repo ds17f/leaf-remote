@@ -1,12 +1,12 @@
 import document from "document";
 import {peerSocket} from "messaging";
 
-import { CONNECT_BEGIN } from "../../common/actions/connect.js";
+import { CONNECT_BEGIN } from "../../../common/actions/connect.js";
 
-import * as messaging from '../fitbit/messaging'
-import { logger } from "../../common/logger";
+import * as messaging from "../../fitbit/messaging";
+import { logger } from "../../../common/logger";
 
-import * as vibration from "./vibration";
+import * as vibration from "../vibration";
 
 
 const index = ["acOn", "acOff", "console"];

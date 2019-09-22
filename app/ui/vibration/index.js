@@ -1,7 +1,7 @@
 import { vibration } from "haptics";
 import { display } from "display";
 
-import { logger } from "../../common/logger";
+import { logger } from "../../../common/logger";
 
 export const vibrateSuccess = (vibrateForSeconds = 3) => {
   vibration.stop();
