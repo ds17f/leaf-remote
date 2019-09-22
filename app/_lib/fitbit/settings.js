@@ -2,9 +2,14 @@ import { peerSocket } from "messaging";
 import { me } from "appbit";
 import { readFileSync, writeFileSync } from "fs";
 
-import { logger } from "../../../common/logger";
+import { logger, levels } from "../../../common/logger";
 
-let appSettings = {};
+// setup with sane defaults
+let appSettings = {
+  debug: false,
+  demo: false,
+  logLevel: levels.TRACE
+};
 
 const writeSettings = (settings, settingsFile = "./settings.json") => {
   logger.debug("writing settings");
@@ -16,7 +21,9 @@ const readSettings = (settingsFile = "./settings.json") => {
   try {
     return readFileSync(settingsFile, "json");
   } catch (error) {
-    logger.error(`Could not open settingsFile: ${settingsFile} - ${error}`)
+    logger.error(`Could not open settingsFile: ${settingsFile} - ${error}`);
+    // return the current (default) settings
+    return appSettings;
   }
 };
 

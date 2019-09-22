@@ -7,6 +7,7 @@ import * as messaging from "../../_lib/fitbit/messaging";
 import { logger } from "../../../common/logger";
 
 import * as vibration from "../vibration";
+import {consoleError, consoleWarn} from "../console";
 
 
 const index = ["acOn", "acOff", "console"];
@@ -80,18 +81,30 @@ export const init = () => {
           setVisibleTile("console");
           vibration.vibrateUi();
           break;
-        case "console":
-          setVisibleTile("console-debug");
-          vibration.vibrateUi();
-          break;
-        case "console-debug":
-          setVisibleTile("console");
-          vibration.vibrateUi();
-          break;
         default:
           break;
       }
     }
+  });
+
+  // add a listener for when the peer socket closes
+  peerSocket.addEventListener('open', (evt) => {
+    logger.trace('tiles.peerSocket.onopen');
+    consoleWarn("Peer Connect", "Peer is connected");
+  });
+
+  // add a listener for when the peer socket closes
+  peerSocket.addEventListener('close', (evt) => {
+    logger.trace('tiles.peerSocket.onclose');
+    consoleError("Peer Connect", "Peer disconnected");
+    setVisibleTile("console");
+  });
+
+  // add a listener for when it closes
+  peerSocket.addEventListener('error', (evt) => {
+    logger.trace('tiles.peerSocket.onerror');
+    consoleError("Peer Connect", "Peer error");
+    setVisibleTile("console");
   });
 
   messaging.registerActionListener(CONNECT_BEGIN, () => {

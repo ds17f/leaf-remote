@@ -14,17 +14,6 @@ import * as listeners from './listeners';
 
 import { logger, levels, setLogLevel } from "../common/logger";
 
-const ensureConnect = (timeOut = 10) => {
-  setTimeout(() => {
-    if (! messaging.isPeerConnected() ){
-      logger.error(`Connection failed after ${timeOut} seconds`);
-
-      logger.debug("enable app timeout");
-      me.appTimeoutEnabled = true;
-    }
-  }, timeOut * 1000)
-};
-
 const settingsUpdateHandler = settings => {
   setLogLevel(settings.logLevel);
   demo.toggleDemoFlag(settings.demo);
@@ -41,8 +30,6 @@ const init = () => {
 
   tiles.init();
   peerConnection.init();
-
-  ensureConnect(20);
 
   logger.debug("disable app timeout");
   me.appTimeoutEnabled = false;

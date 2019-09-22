@@ -6,7 +6,7 @@ import { logger } from "../../../common/logger";
 
 import * as messaging from "../../_lib/fitbit/messaging";
 
-import { consoleWarn, consoleError } from "../console";
+import { consoleError } from "../console";
 
 const icons = {
   notConnected: 80,
@@ -38,6 +38,7 @@ const ensureConnect = (timeOut = 20) => {
   setTimeout(() => {
     if (! messaging.isPeerConnected() ){
       consoleError("Peer Connection", `Connection failed after ${timeOut} seconds`);
+      showNotConnected();
 
       logger.debug("enable app timeout");
       me.appTimeoutEnabled = true;
@@ -58,17 +59,22 @@ export const init = () => {
   }
   // add a listener for when it opens
   peerSocket.addEventListener('open', (evt) => {
+    logger.trace('peerConnection.peerSocket.onopen');
     showConnected();
-    consoleWarn("Peer Connection", "Peer is connected");
   });
 
   // add a listener for when it closes
   peerSocket.addEventListener('close', (evt) => {
-    logger.trace(`peer closed: ${evt.code}`);
-    if (evt.code !== CloseCode.PEER_INITIATED) {
-      showFailed();
-    }
+    logger.trace('peerConnection.peerSocket.onclose');
+    showFailed();
   });
+
+  // add a listener for when it closes
+  peerSocket.addEventListener('error', (evt) => {
+    logger.trace('peerConnection.peerSocket.onerror');
+    showFailed();
+  });
+
 
   // ensure that we connect after some time
   ensureConnect()
