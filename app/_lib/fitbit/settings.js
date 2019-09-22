@@ -1,7 +1,10 @@
 import { peerSocket } from "messaging";
+import { me } from "appbit";
 import { readFileSync, writeFileSync } from "fs";
 
 import { logger } from "../../../common/logger";
+
+let appSettings = {};
 
 const writeSettings = (settings, settingsFile = "./settings.json") => {
   logger.debug("writing settings");
@@ -20,10 +23,12 @@ const readSettings = (settingsFile = "./settings.json") => {
 export const init = settingsCallback => {
   logger.trace("settings.init");
   // on init read the settings from a file
-  const settings = readSettings();
-  // and push them out to the callback so it can update
-  // TODO: need to verify what happens when there's no settings file
-  settingsCallback(settings);
+  appSettings = readSettings();
+
+  me.addEventListener("unload", () => {
+    writeSettings(appSettings);
+  });
+
 
   // TODO: Update this to use messaging.registerActionListener?
   // add a listener for SETTINGS messages and update accordingly
@@ -31,7 +36,8 @@ export const init = settingsCallback => {
     const { data } = evt;
     if ( data.type === "SETTINGS" ) {
       writeSettings(data.settings);
-      settingsCallback(data.settings);
+      appSettings = data.settings;
     }
   });
+
 };
