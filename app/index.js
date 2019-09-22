@@ -7,6 +7,8 @@ import * as messaging from './_lib/fitbit/messaging'
 
 import * as tiles from './ui/tiles';
 import * as peerConnection from './ui/peerConnection';
+import * as demo from './ui/demo';
+
 import * as actions from './actions';
 import * as listeners from './listeners';
 
@@ -46,8 +48,7 @@ const init = () => {
   setLogLevel(levels.TRACE);
   logger.warn("---- Starting up ----");
 
-  //TODO: Don't think we need the callback so right now just print it out
-  settings.init(s => logger.trace(`Settings callback: ${JSON.stringify(s)}`));
+  settings.init((settings) => demo.toggleDemoFlag(settings.demo));
   messaging.init();
   actions.init();
   listeners.init();

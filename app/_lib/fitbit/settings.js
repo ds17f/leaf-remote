@@ -20,10 +20,11 @@ const readSettings = (settingsFile = "./settings.json") => {
   }
 };
 
-export const init = settingsCallback => {
+export const init = (settingsCallback) => {
   logger.trace("settings.init");
   // on init read the settings from a file
   appSettings = readSettings();
+  settingsCallback(appSettings);
 
   me.addEventListener("unload", () => {
     writeSettings(appSettings);
@@ -37,6 +38,7 @@ export const init = settingsCallback => {
     if ( data.type === "SETTINGS" ) {
       writeSettings(data.settings);
       appSettings = data.settings;
+      settingsCallback(appSettings);
     }
   });
 
