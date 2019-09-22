@@ -7,7 +7,7 @@ import * as messaging from "./fitbit/messaging";
 import * as settings from "./fitbit/settings"
 
 const init = () => {
-  setLogLevel(levels.WARN);
+  setLogLevel(levels.DEBUG);
   logger.warn("---- Start Companion ----");
 
   // plumbing

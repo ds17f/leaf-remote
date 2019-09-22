@@ -9,7 +9,7 @@ import { logger } from "../../common/logger";
 import * as vibration from "./vibration";
 
 
-const tiles = ["acOn", "acOff", "console"];
+const index = ["acOn", "acOff", "console"];
 let visibleTile = "console";
 
 const setVisibleTile = newTile => {
@@ -26,24 +26,29 @@ const setVisibleTile = newTile => {
   vibration.vibrateUi();
 };
 
+export const getVisibleTile = () => {
+  // return a copy
+  return visibleTile.toString();
+};
+
 const nextTile = ( forward = true ) => {
 
   // if we're showing the debug console
   // we'll just pretend we're showing the normal console
   if (visibleTile === "debug") {
-    return tiles[0];
+    return index[0];
   }
 
-  let visibleTileIndex = tiles.indexOf(visibleTile);
+  let visibleTileIndex = index.indexOf(visibleTile);
   visibleTileIndex += forward ? 1 : -1;
 
-  if (visibleTileIndex >= tiles.length) {
+  if (visibleTileIndex >= index.length) {
     visibleTileIndex = 0;
   } else if (visibleTileIndex < 0) {
-    visibleTileIndex = tiles.length - 1;
+    visibleTileIndex = index.length - 1;
   }
 
-  return tiles[visibleTileIndex];
+  return index[visibleTileIndex];
 };
 
 const rotateTile = (forward = true) => {
@@ -58,6 +63,7 @@ const rotateTile = (forward = true) => {
 };
 
 export const init = () => {
+  logger.debug("tiles.init");
   document.addEventListener('keypress', (e) => {
     if (e.key === "down") {
       e.preventDefault();
@@ -65,7 +71,22 @@ export const init = () => {
     }
     if (e.key === "up") {
       e.preventDefault();
-      setVisibleTile("console");
+      switch (visibleTile) {
+        case "acOn":
+          setVisibleTile("console");
+          break;
+        case "acOff":
+          setVisibleTile("console");
+          break;
+        case "console":
+          setVisibleTile("console-debug");
+          break;
+        case "console-debug":
+          setVisibleTile("console");
+          break;
+        default:
+          break;
+      }
     }
   });
 

@@ -2,6 +2,8 @@ import * as settings from './fitbit/settings';
 import * as messaging from './fitbit/messaging'
 import * as vibration from './ui/vibration';
 import * as _tiles from './ui/tiles';
+import * as uiConsole from './ui/console';
+import * as actions from './actions'
 
 import document from "document";
 import { peerSocket } from "messaging";
@@ -75,7 +77,7 @@ const uiDebugOut = (msg, ts = null) => {
     console.error(`Failed to write log message to console: ${msg}`)
   }
 };
-const logger = {
+const oldLogger = {
   error: (msg, ts) => {
     console.error(msg);
     uiDebugOut(msg, ts);
@@ -451,13 +453,15 @@ const apiLogin = () => {
 };
 
 const init = () => {
-  setLogLevel(levels.WARN);
+  setLogLevel(levels.DEBUG);
   logger.warn("---- Starting up ----");
 
   settings.init(applySettings);
   messaging.init();
-  _tiles.init();
+  actions.init();
 
+  _tiles.init();
+  uiConsole.init();
 
   return;
 

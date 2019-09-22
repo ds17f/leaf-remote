@@ -17,12 +17,14 @@ const readSettings = (settingsFile = "./settings.json") => {
 };
 
 export const init = settingsCallback => {
+  logger.debug("settings.init");
   // on init read the settings from a file
   const settings = readSettings();
   // and push them out to the callback so it can update
   // TODO: need to verify what happens when there's no settings file
   settingsCallback(settings);
 
+  // TODO: Update this to use messaging.registerActionListener?
   // add a listener for SETTINGS messages and update accordingly
   peerSocket.addEventListener('message', async (evt) => {
     const { data } = evt;

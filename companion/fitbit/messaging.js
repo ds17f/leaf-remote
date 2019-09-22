@@ -24,13 +24,13 @@ export const send = (data) => {
   }
 };
 
-export const registerAPIActionListener = (apiAction, callback) => {
+export const registerActionListener = (msg, callback) => {
   peerSocket.addEventListener('message', async (evt) => {
     const { data } = evt;
     const { type, action } = data;
 
-    if ( type === "API" && action === apiAction) {
-      await callback();
+    if ( type === msg.type && action === msg.action) {
+      await callback(data);
     }
   });
 };

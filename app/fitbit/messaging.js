@@ -6,6 +6,7 @@ export const isPeerConnected = () => {
 };
 
 export const init = () => {
+  logger.debug("messaging.init");
   peerSocket.addEventListener('open', () => {
     logger.debug("Ready to send/receive");
   });

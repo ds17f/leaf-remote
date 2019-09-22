@@ -13,7 +13,7 @@ export const createClimateAction = (getSettings, ON_OR_OFF, BEGIN, POLL, SUCCESS
 
     // TODO: Demo mode???
     if (settings.demo) {
-      logger.debug(`demo: ${settings.demo}`);
+      logger.error(`demo: ${settings.demo}`);
       return;
     }
 

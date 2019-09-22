@@ -13,5 +13,5 @@ export const logger = {
   debug: (m) => (level <= levels.DEBUG) && console.log(m),
   info: (m) => (level <= levels.INFO) && console.info(m),
   warn: (m) => (level <= levels.WARN) && console.warn(m),
-  ERROR: (m) => (level <= levels.ERROR) && console.error(m),
+  error: (m) => (level <= levels.ERROR) && console.error(m),
 };

@@ -1,9 +1,10 @@
 import { createSession } from './carwings2-js/carwings';
 import * as messaging from "../fitbit/messaging";
+import * as actions from "../../common/actions/login";
 
-const LOGIN_START = () => ({type: "API", action: "LOGIN_START"});
-const LOGIN_COMPLETE = () => ({type: "API", action: "LOGIN_COMPLETE"});
-const LOGIN_FAILED = error => ({type: "API", action: "LOGIN_FAILED", error: error.toString()});
+const LOGIN_START = () => Object.assign({}, actions.LOGIN_START);
+const LOGIN_COMPLETE = () => Object.assign({}, actions.LOGIN_COMPLETE);
+const LOGIN_FAILED = error => Object.assign({error: error.toString()}, actions.LOGIN_FAILED);
 
 export const nissanLogin = async (username, password) => {
   const session = createSession(username, password);
