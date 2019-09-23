@@ -91,6 +91,7 @@ export const init = () => {
   peerSocket.addEventListener('open', (evt) => {
     logger.trace('tiles.peerSocket.onopen');
     consoleWarn("Peer Connect", "Peer is connected");
+    setVisibleTile("acOn");
   });
 
   // add a listener for when the peer socket closes
@@ -105,11 +106,6 @@ export const init = () => {
     logger.trace('tiles.peerSocket.onerror');
     consoleError("Peer Connect", "Peer error");
     setVisibleTile("console");
-  });
-
-  messaging.registerActionListener(CONNECT_BEGIN, () => {
-    logger.debug(`tiles: Connect Begin Received`);
-    setVisibleTile("acOn");
   });
 
   logger.debug(`tiles.init: isPeerConnected: ${messaging.isPeerConnected()}`);
