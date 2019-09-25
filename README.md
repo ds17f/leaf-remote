@@ -18,6 +18,70 @@ and taking my phone out and looking at the screen was simply not an option.  The
 
 I turned my attention to my FitBit Versa, and this project was born.
 
+# Understanding The Leaf's Remote (you should read this)
+Writing the FitBit app code for this project was really only a part of the challenge.
+It's pretty well understood that the design of the Leaf's remote control system is 
+essentially flawed and unreliable.  This appears to stem from a series of decisions
+that Nissan made when building the car and the remote.  It's not any one thing but 
+really the sum of the parts that makes for a bad user experience.
+
+Fortunately, while doing this work, I had the chance to do a bunch of empirical observation
+which has, I think, allowed me to significantly improve the reliability of my Leaf Remote.
+When I started, I could barely get the car to respond to valid requests.  Now I'd say I have
+around a 95-97% success rate.
+
+## Why does the Leaf Remote work so poorly?
+### The 12V Battery
+* Nissan chose a standard 12V lead acid battery.  This is likely a cost saving measure.
+* Because there is no alternator the car charges the 12V battery using a DC to DC charger and draws current from the LiOn batteries.
+* To reduce drain on the LiOn batteries (and extend range), Nissan uses a sub optimal algorithm for charging the 12V battery.
+
+### AT&T's 3G Network
+* Nissan originally launched the Leaf with a 2G modem.
+* When the 2G network was taken offline, Nissan upgraded users to a 3G network.
+* The 3G network is cheap, slow, and unreliable (as it is outdated tech).  Coverage may be limited in your area.
+
+### `Carwings` (and the `TCU`)
+* (It appears that) when the 12V battery drops below `12.5V` the Leaf "protects" further drain on the battery by putting the 3G modem to sleep.
+* Generally, the `TCU` doesn't wake itself back up if/when the voltage returns to a stable level.
+
+## How can you make it work better?
+> What follows in this section is largely a result of anecdotal evidence and empirical observation.
+> I've been able to significantly increase the reliability of my Leaf remote but YMMV.
+
+### Buy a new 12V battery
+I spent time observing the voltage of my original 12V battery using LeafSpy.
+There seemed to be a correlation between the reported 12.5V threshold and 
+the failures of my Leaf remote.
+
+I read on the [forums](https://mynissanleaf.com/) that AGM batteries will tend to 
+hold their charge better in deep cycle situations.  I bought a new battery and 
+saw the voltage swings decrease and remote performance improve.  Things were better
+but still not perfect.
+
+### Unplug the Leaf when it is done charging
+I had been plugging the car in whenever I came home and leaving it plugged in indefinitely.
+I'm using the trickle charger that came with the car for home charging.
+
+There appears to be a correlation between:
+* Leaving the Leaf plugged in while not charging (for a long time).
+* The `TCU` going in to sleep mode.
+
+I saw a significant improvement in calls to the Leaf Remote when I stopped leaving the 
+car plugged in.  I have not tested what happens if the charger is plugged into the car
+but not plugged into the wall.  I'd be curious to see what the result of that experiment looks like.
+
+### Re-enter your pin/pass into `Carwings` on a regular basis
+You can force wake the `TCU` by re-entering your pin and pass in `Carwings`.
+The car will then go through its "authorization" process to log in to the Nissan servers.
+This must wake the `TCU` to make that call and appears to keep the `TCU` awake after that.
+
+I've memorized my pin/pass and I sometimes enter it before heading into a store.
+It can take a while (a minute or two) for `Carwings` to talk to Nissan and to
+successfully login.  I'm not sure how much of the login process you need to wait for
+in order to fully wake the `TCU`.
+
+
 # Using `leaf-bit`
 The user interface is designed to be simple and to work without the need to look at the FitBit.
 
