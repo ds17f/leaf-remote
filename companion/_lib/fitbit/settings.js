@@ -4,6 +4,9 @@ import { settingsStorage } from "settings";
 import { logger, levels } from "../../../common/logger";
 import { send } from "../fitbit/messaging";
 
+const DEFAULT_API_TIMEOUT = 300;
+const DEFAULT_API_POLL_INTERVAL = 10;
+
 let companion = {};
 let app = {};
 
@@ -16,29 +19,32 @@ const SETTINGS = settings => ({type: "SETTINGS", settings: settings });
 const getBoolSetting = settingName => {
   const setting = settingsStorage.getItem(settingName);
   logger.debug(`${settingName}: ${setting}`);
-  return JSON.parse(setting) || false;
+
+  const result = JSON.parse(setting) || false;
+  settingsStorage.setItem(settingName, result);
+  return result;
 };
 
 const getTextSetting = (settingName, defaultVal = "") => {
   const setting = settingsStorage.getItem(settingName);
   logger.debug(`${settingName}: ${setting}, default: ${defaultVal}`);
   const parsedSetting = JSON.parse(setting);
-  if ( ! parsedSetting ) {
+  if ( ! parsedSetting || ! parsedSetting.name ) {
+    settingsStorage.setItem(settingName, JSON.stringify({name: defaultVal}));
     return defaultVal;
   }
   return parsedSetting.name
-    ? parsedSetting.name
-    : defaultVal
 };
 
 const build = () => {
   companion = {
     username: getTextSetting("username"),
     password: getTextSetting("password"),
-    apiTimeout: getTextSetting("apiTimeout", 300),
-    apiPollInterval: getTextSetting("apiPollInterval", 10),
+    apiTimeout: getTextSetting("apiTimeout", DEFAULT_API_TIMEOUT),
+    apiPollInterval: getTextSetting("apiPollInterval", DEFAULT_API_POLL_INTERVAL),
 
     demo: getBoolSetting("demo"),
+    debug: getBoolSetting("debug"),
     logLevel: getBoolSetting("debug") ? levels.TRACE : levels.WARN
   };
   app = {
