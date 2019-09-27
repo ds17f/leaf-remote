@@ -8,22 +8,22 @@ export const registerListener = () => {
   logger.trace("ui.console.registerStopActions");
 
   registerActionListener(messages.AC_OFF_START, () => {
-    consoleInfo("Stop Climate", "Stop sent, awaiting result.")
+    consoleInfo("Climate Stop", "Stop sent, awaiting result.")
   });
 
   registerActionListener(messages.AC_OFF_POLLING, (data) => {
-    consoleInfo("Stop Climate", `Awaiting result, loop: ${data.loop}`)
+    consoleInfo("Climate Stop", `Awaiting result, loop: ${data.loop}`)
   });
 
   registerActionListener(messages.AC_OFF_SUCCESS, () => {
-    consoleWarn("Stop Climate", "Climate Stopped Successfully")
+    consoleWarn("Climate Stop", "Climate Stopped Successfully")
   });
 
   registerActionListener(messages.AC_OFF_TIMEOUT, (data) => {
-    consoleError("Stop Climate", `Climate Stop Failed after: ${data.timeout} seconds.`)
+    consoleError("Climate Stop", `Climate Stop Failed after: ${data.timeout} seconds.`)
   });
 
   registerActionListener(messages.AC_OFF_FAILURE, (data) => {
-    consoleError("Stop Climate", `Climate Stop Failed with: ${data.result}.`)
+    consoleError("Climate Stop", `Climate Stop Failed with: ${data.result}.`)
   });
 };

@@ -8,15 +8,15 @@ export const registerListener = () => {
   logger.trace("listeners.login.registerListener");
 
   registerActionListener(messages.LOGIN_START, () => {
-    consoleInfo("Login", "Logging in to Nissan");
+    consoleInfo(null, "Logging in to Nissan");
   });
 
   registerActionListener(messages.LOGIN_COMPLETE, () => {
-    consoleInfo("Login", "Logged in successfully");
+    consoleInfo(null, "Logged in successfully");
   });
 
   registerActionListener(messages.LOGIN_FAILED, (data) => {
-    consoleError("Login", `Login failed: ${data.error}`);
+    consoleError(null, `Login failed: ${data.error}`);
   });
 
 };

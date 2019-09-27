@@ -7,7 +7,7 @@ import * as messaging from "../../_lib/fitbit/messaging";
 import { logger } from "../../../common/logger";
 
 import * as vibration from "../vibration";
-import {consoleError, consoleWarn} from "../console";
+import {consoleError, consoleInfo, consoleWarn} from "../console";
 
 
 const index = ["acOn", "acOff", "console"];
@@ -75,10 +75,12 @@ export const init = () => {
       switch (visibleTile) {
         case "acOn":
           setVisibleTile("console");
+          consoleInfo("Climate Start", "Sending Climate Start Request");
           vibration.vibrateUi();
           break;
         case "acOff":
           setVisibleTile("console");
+          consoleInfo("Climate Stop", "Sending Climate Stop Request");
           vibration.vibrateUi();
           break;
         default:
