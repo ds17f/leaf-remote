@@ -184,7 +184,7 @@ You get a message in the `Message Console` that says "Climate {Start|Stop} Faile
 The Nissan API failed to communicate with the Leaf.  You can install the NissanConnect EV app
 and turn on notifications.  This allows the Nissan API to send you push notifications describing
 what it thinks happened in your request.  You'll often get failure messages that communicate:
-* The car is on or the battery is very low
+* LEAF: Climate control failed.  Low charge or car on.  Please try your request again.
 * The car has bad service on the 3g network
 
 It can take a few minutes for these messages to appear, 
