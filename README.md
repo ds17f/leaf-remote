@@ -89,13 +89,21 @@ The user interface is designed to be simple and to work without the need to look
 ### Settings
 You need to configure the app so that it can talk to your car.  You do this in the `Settings` component of the FitBit app on your phone.
 
-#### Username / Password
+#### Nissan API Credentials 
 You'll see fields for `username` and `password`.  You should enter the username and password that you use in the NissanConnect EV app, 
 not the pin/pass that you enter in the Leaf's head unit.
 
-#### Polling Interval / Timeout
-You can control the rate at which `leaf-bit` polls the Nissan API checking for an update to your request.
-You can also control the amount of time to wait before you give up and assume that the request failed.
+#### Options
+##### Swap Buttons
+By default, the top button is the "Do" button and the bottom is the "Next" button.
+Use this toggle to swap the functionality of the buttons.
+
+This can be useful if you put `leaf-bit` in the bottom, quick launch position and you 
+want to be able to just press the bottom button twice to start climate.
+
+##### Developer Options
+Use this toggle to turn on some developer only options.  These are useful for debugging
+or controlling advanced functionality
 
 ## `leaf-bit` on your FitBit Device
 ### Tiles
