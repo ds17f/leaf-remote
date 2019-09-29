@@ -8,6 +8,7 @@ import * as messaging from './_lib/fitbit/messaging'
 import * as tiles from './ui/tiles';
 import * as peerConnection from './ui/peerConnection';
 import * as demo from './ui/demo';
+import * as buttons from './ui/buttons';
 
 import * as actions from './actions';
 import * as listeners from './listeners';
@@ -17,6 +18,7 @@ import { logger, levels, setLogLevel } from "../common/logger";
 const settingsUpdateHandler = settings => {
   setLogLevel(settings.logLevel);
   demo.toggleDemoFlag(settings.demo);
+  buttons.swapButtons(settings.swapButtons);
 };
 
 const init = () => {

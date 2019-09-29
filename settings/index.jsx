@@ -38,6 +38,9 @@ function settingsComponent(props) {
       <Toggle
         label="Demo Mode"
         settingsKey="demo" />
+      <Toggle
+        label="Swap Buttons (Top: Next, Bottom: Do)"
+        settingsKey="swapButtons" />
     </Page>
   );
 }

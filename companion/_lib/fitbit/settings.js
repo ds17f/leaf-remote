@@ -45,11 +45,13 @@ const build = () => {
 
     demo: getBoolSetting("demo"),
     debug: getBoolSetting("debug"),
+    swapButtons: getBoolSetting("swapButtons"),
     logLevel: getBoolSetting("debug") ? levels.TRACE : levels.WARN
   };
   app = {
     debug: companion.debug,
     demo: companion.demo,
+    swapButtons: companion.swapButtons,
     logLevel: companion.logLevel
   };
 };

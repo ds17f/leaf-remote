@@ -8,6 +8,7 @@ import { logger } from "../../../common/logger";
 
 import * as vibration from "../vibration";
 import {consoleError, consoleInfo, consoleWarn} from "../console";
+import { registerButtonListeners } from "../buttons";
 
 
 const index = ["acOn", "acOff", "console"];
@@ -63,31 +64,31 @@ const rotateTile = (forward = true) => {
   return true;
 };
 
+const nextButtonHandler = () => {
+  rotateTile(true)
+};
+
+const doButtonHandler = () => {
+  switch (visibleTile) {
+    case "acOn":
+      setVisibleTile("console");
+      consoleInfo("Climate Start", "Sending Climate Start Request");
+      vibration.vibrateUi();
+      break;
+    case "acOff":
+      setVisibleTile("console");
+      consoleInfo("Climate Stop", "Sending Climate Stop Request");
+      vibration.vibrateUi();
+      break;
+    default:
+      break;
+  }
+};
+
 export const init = () => {
-  logger.debug("tiles.init");
-  document.addEventListener('keypress', (e) => {
-    if (e.key === "down") {
-      e.preventDefault();
-      rotateTile(true)
-    }
-    if (e.key === "up") {
-      e.preventDefault();
-      switch (visibleTile) {
-        case "acOn":
-          setVisibleTile("console");
-          consoleInfo("Climate Start", "Sending Climate Start Request");
-          vibration.vibrateUi();
-          break;
-        case "acOff":
-          setVisibleTile("console");
-          consoleInfo("Climate Stop", "Sending Climate Stop Request");
-          vibration.vibrateUi();
-          break;
-        default:
-          break;
-      }
-    }
-  });
+  logger.trace("tiles.init");
+
+  registerButtonListeners(doButtonHandler, nextButtonHandler);
 
   // add a listener for when the peer socket closes
   peerSocket.addEventListener('open', (evt) => {
