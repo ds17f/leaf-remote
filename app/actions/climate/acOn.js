@@ -13,14 +13,14 @@ import { registerButtonListeners } from "../../ui/buttons";
 const AC_ON = () => messages.AC_ON_START;
 
 const doButtonPressHandler = () => {
-  if (getVisibleTile() === "acOff") {
+  if (getVisibleTile() === "acOn") {
     logger.info("Sending Climate Start Request");
     messaging.send(AC_ON());
   }
 };
 
 export const init = () => {
-  logger.trace("action.acOff.init");
+  logger.trace("action.acOn.init");
   registerButtonListeners(doButtonPressHandler);
 };
 
