@@ -25,6 +25,7 @@ export const registerListener = () => {
   registerActionListener(messages.AC_ON_SUCCESS, () => {
     consoleWarn("Climate Start", "Climate Started Successfully");
     me.appTimeoutEnabled = !stayAlive;
+    logger.debug(`appTimeoutEnabled = ${me.appTimeoutEnabled}`)
   });
 
   registerActionListener(messages.AC_ON_TIMEOUT, (data) => {
