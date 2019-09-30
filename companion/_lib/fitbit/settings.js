@@ -4,7 +4,7 @@ import { settingsStorage } from "settings";
 import { logger, levels } from "../../../common/logger";
 import { send } from "../fitbit/messaging";
 
-const DEFAULT_API_TIMEOUT = 300;
+const DEFAULT_API_TIMEOUT = 180;
 const DEFAULT_API_POLL_INTERVAL = 10;
 
 let companion = {};
