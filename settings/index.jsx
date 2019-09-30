@@ -43,6 +43,9 @@ function settingsComponent(props) {
           <Toggle
             label="Demo Mode"
             settingsKey="demo" />
+          <Toggle
+            label="Disable Auto Exit"
+            settingsKey="stayAlive" />
         </Section>
       }
       <Link source="https://github.com/damiansilbergleithcunniff/leaf-bit/blob/master/README.md">Need Help?</Link>

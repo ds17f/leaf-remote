@@ -1,5 +1,3 @@
-import document from "document";
-import { peerSocket } from "messaging";
 import { me } from "appbit";
 
 import * as settings from './_lib/fitbit/settings';
@@ -19,6 +17,7 @@ const settingsUpdateHandler = settings => {
   setLogLevel(settings.logLevel);
   demo.toggleDemoFlag(settings.demo);
   buttons.swapButtons(settings.swapButtons);
+  listeners.toggleStayAlive(settings.stayAlive);
 };
 
 const init = () => {

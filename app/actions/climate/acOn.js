@@ -1,5 +1,3 @@
-import document from 'document';
-
 import * as messages from "../../../common/messages/startAc";
 import { logger } from "../../../common/logger";
 

@@ -46,12 +46,14 @@ const build = () => {
     demo: getBoolSetting("demo"),
     debug: getBoolSetting("debug"),
     swapButtons: getBoolSetting("swapButtons"),
+    stayAlive: getBoolSetting("stayAlive"),
     logLevel: getBoolSetting("debug") ? levels.TRACE : levels.WARN
   };
   app = {
     debug: companion.debug,
     demo: companion.demo,
     swapButtons: companion.swapButtons,
+    stayAlive: companion.stayAlive,
     logLevel: companion.logLevel
   };
 };
