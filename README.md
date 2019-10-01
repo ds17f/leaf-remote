@@ -257,3 +257,6 @@ your pin/pass into the appropriate area in `Carwings`.
 Note that this is **not the username/password that you use to log into `leaf-bit`,
 the NissanConnect EV app, or the Nissan Owner's Portal.** 
 
+# Prior Art and Credits
+* The core API work on this project is based off of Phil Cole's excellent [pycarwings2](https://github.com/filcole/pycarwings2) library.
+
