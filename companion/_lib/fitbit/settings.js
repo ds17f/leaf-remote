@@ -21,6 +21,7 @@ import { send } from "../fitbit/messaging";
 
 const DEFAULT_API_TIMEOUT = 180;
 const DEFAULT_API_POLL_INTERVAL = 10;
+const DEFAULT_REGION_CODE = "NNA";
 
 let companion = {};
 let app = {};
@@ -57,6 +58,7 @@ const build = () => {
     password: getTextSetting("password"),
     apiTimeout: getTextSetting("apiTimeout", DEFAULT_API_TIMEOUT),
     apiPollInterval: getTextSetting("apiPollInterval", DEFAULT_API_POLL_INTERVAL),
+    region: getTextSetting("region", DEFAULT_REGION_CODE),
 
     demo: getBoolSetting("demo"),
     debug: getBoolSetting("debug"),

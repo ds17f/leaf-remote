@@ -33,7 +33,7 @@ export const createClimateAction = (getSettings, ON_OR_OFF, BEGIN, POLL, SUCCESS
     }
 
     // Login to nissan
-    const session = await nissanLogin(settings.username, settings.password);
+    const session = await nissanLogin(settings.username, settings.password, settings.region);
     if (! session.loggedIn) {
       messaging.send(FAILURE("Login failed"));
       return false;

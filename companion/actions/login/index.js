@@ -21,8 +21,8 @@ const LOGIN_START = () => Object.assign({}, messages.LOGIN_START);
 const LOGIN_COMPLETE = () => Object.assign({}, messages.LOGIN_COMPLETE);
 const LOGIN_FAILED = error => Object.assign({error: error.toString()}, messages.LOGIN_FAILED);
 
-export const nissanLogin = async (username, password) => {
-  const session = createSession(username, password);
+export const nissanLogin = async (username, password, region) => {
+  const session = createSession(username, password, region);
 
   messaging.send(LOGIN_START());
   try {

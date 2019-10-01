@@ -16,6 +16,7 @@ function settingsComponent(props) {
         </Text>
         <TextInput label="username" settingsKey="username"/>
         <TextInput label="password" settingsKey="password" type="password" />
+        <TextInput label="Nissan Region Code" settingsKey="region"/>
       </Section>
       <Section
         title={

@@ -89,9 +89,14 @@ The user interface is designed to be simple and to work without the need to look
 ### Settings
 You need to configure the app so that it can talk to your car.  You do this in the `Settings` component of the FitBit app on your phone.
 
-#### Nissan API Credentials 
+#### Nissan API 
+##### Credentials 
 You'll see fields for `username` and `password`.  You should enter the username and password that you use in the NissanConnect EV app, 
 not the pin/pass that you enter in the Leaf's head unit.
+
+##### Region
+The app has been tested in North America with the region code `NNA`.
+You are welcome to input another region and see if it works.  YMMV.
 
 #### Options
 ##### Swap Buttons
