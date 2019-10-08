@@ -1,6 +1,6 @@
 {
-  "name": "leaf-bit",
-  "version": "1.0.0",
+  "name": "leaf-remote",
+  "version": "1.0.1",
   "private": true,
   "license": "Apache 2.0",
   "devDependencies": {
@@ -10,7 +10,7 @@
   "fitbit": {
     "appUUID": "7c0b8058-1c96-4b95-bd1a-fe3be6f9af32",
     "appType": "app",
-    "appDisplayName": "LeafBit",
+    "appDisplayName": "LeafRemote",
     "iconFile": "resources/icon.png",
     "wipeColor": "#ffffff",
     "requestedPermissions": [
