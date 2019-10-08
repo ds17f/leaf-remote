@@ -1,5 +1,5 @@
-# leaf-bit
-`leaf-bit` is a FitBit app for communicating with the Nissan Leaf's remote control systems.
+# leaf-remote
+`leaf-remote` is a FitBit app for communicating with the Nissan Leaf's remote control systems.
 
 # Features
 * Climate Start
@@ -82,7 +82,7 @@ successfully login.  I'm not sure how much of the login process you need to wait
 in order to fully wake the `TCU`.
 
 
-# Using `leaf-bit`
+# Using `leaf-remote`
 The user interface is designed to be simple and to work without the need to look at the FitBit.
 
 ## FitBit App on your Phone
@@ -103,14 +103,14 @@ You are welcome to input another region and see if it works.  YMMV.
 By default, the top button is the "Do" button and the bottom is the "Next" button.
 Use this toggle to swap the functionality of the buttons.
 
-This can be useful if you put `leaf-bit` in the bottom, quick launch position and you 
+This can be useful if you put `leaf-remote` in the bottom, quick launch position and you 
 want to be able to just press the bottom button twice to start climate.
 
 ##### Developer Options
 Use this toggle to turn on some developer only options.  These are useful for debugging
 or controlling advanced functionality
 
-## `leaf-bit` on your FitBit Device
+## `leaf-remote` on your FitBit Device
 ### Tiles
 There are **3 "Tiles" or screens that you can page through.**  They are:
 #### Climate Start
@@ -144,7 +144,7 @@ The `Message Console` tile is the primary means for checking on the status of yo
 
 # Common Issues
 The Nissan Leaf's remote control system is prone to errors at several different layers.
-`leaf-bit` seeks to work around some of these issues but introduces a few others that are specific to the FitBit ecosystem.
+`leaf-remote` seeks to work around some of these issues but introduces a few others that are specific to the FitBit ecosystem.
 The section that follows provides insight and remediation for these issues based on my experience building this app.
 
 There are 3 main components where issues can arise: 
@@ -182,7 +182,7 @@ You get a message in the `Message Console` that login failed.
 #### Solution
 > *tl;dr:* Check your username/password
 
-Double check your username and password in the settings for `leaf-bit` in the FitBit phone app.
+Double check your username and password in the settings for `leaf-remote` in the FitBit phone app.
 You must use the credentials you use in the NissanConnect EV app, or in the Nissan owner portal.
 Do not use the pin/password that you enter in the Leaf's radio.
 
@@ -213,14 +213,14 @@ about why your request failed, it is possible that the Nissan API is having issu
 You should try again in a short amount of time.  You might even try again right away.
 
 #### Solution 3
-> *tl;dr*: File an issue in the [Issue Tracker](/leaf-bit/issues)
+> *tl;dr*: File an issue in the [Issue Tracker](/leaf-remote/issues)
 
 If you've tried again and the issue persists, it's possible that the API has changed 
-and `leaf-bit` needs to be updated.  Please open a support request in the [Issue Tracker](/leaf-bit/issues)
+and `leaf-remote` needs to be updated.  Please open a support request in the [Issue Tracker](/leaf-remote/issues)
 
 ## Leaf
 The Leaf itself is the most sensitive part of the system.
-Generally speaking when `leaf-bit` fails to start/stop climate it's a result of 
+Generally speaking when `leaf-remote` fails to start/stop climate it's a result of 
 the Leaf being unresponsive.
 
 The Leaf's on-board remote control is comprised of the `Carwings` head unit, and a `TCU` or Telecommunications Unit.
@@ -259,7 +259,7 @@ If the car has 3G service but fails to respond to remote requests it is very lik
 that the `TCU` has been put to sleep.  You can force it to wake up by re-entering 
 your pin/pass into the appropriate area in `Carwings`.  
 
-Note that this is **not the username/password that you use to log into `leaf-bit`,
+Note that this is **not the username/password that you use to log into `leaf-remote`,
 the NissanConnect EV app, or the Nissan Owner's Portal.** 
 
 # Prior Art and Credits
