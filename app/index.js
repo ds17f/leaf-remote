@@ -22,6 +22,7 @@ import * as tiles from './ui/tiles';
 import * as peerConnection from './ui/peerConnection';
 import * as demo from './ui/demo';
 import * as buttons from './ui/buttons';
+import * as touch from './ui/touch';
 
 import * as actions from './actions';
 import * as listeners from './listeners';
@@ -43,6 +44,7 @@ const init = () => {
   messaging.init();
   actions.init();
   listeners.init();
+  touch.init();
 
   tiles.init();
   peerConnection.init();

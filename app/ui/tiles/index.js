@@ -79,6 +79,18 @@ const rotateTile = (forward = true) => {
   return true;
 };
 
+export const rotateForward = () => {
+  rotateTile(true);
+};
+
+export const rotateBack = () => {
+  rotateTile(false);
+};
+
+export const showConsole = () => {
+  setVisibleTile('console');
+}
+
 const nextButtonHandler = () => {
   rotateTile(true)
 };
