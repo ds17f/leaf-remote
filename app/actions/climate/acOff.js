@@ -25,11 +25,13 @@ import { registerButtonListeners } from "../../ui/buttons";
 // const AC_OFF = () => Object.assign({}, messages.AC_OFF_START);
 const AC_OFF = () => messages.AC_OFF_START;
 
-const doButtonPressHandler = () => {
+export const doButtonPressHandler = () => {
   if (getVisibleTile() === "acOff") {
     logger.info("Sending Climate Stop Request");
     messaging.send(AC_OFF());
+    return true;
   }
+  return false;
 };
 
 export const init = () => {

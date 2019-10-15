@@ -25,6 +25,9 @@ function settingsComponent(props) {
           </Text>
         }>
         <Toggle
+          label="Disable Touch"
+          settingsKey="disableTouch" />
+        <Toggle
           label="Swap Buttons (Top: Next, Bottom: Do)"
           settingsKey="swapButtons" />
         <Toggle

@@ -67,7 +67,7 @@ const nextTile = ( forward = true ) => {
   return index[visibleTileIndex];
 };
 
-const rotateTile = (forward = true) => {
+export const rotateTile = (forward = true) => {
 
   if ( ! messaging.isPeerConnected() ) {
     return false;
@@ -78,6 +78,10 @@ const rotateTile = (forward = true) => {
 
   return true;
 };
+
+export const showConsole = () => {
+  setVisibleTile('console');
+}
 
 const nextButtonHandler = () => {
   rotateTile(true)

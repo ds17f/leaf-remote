@@ -6,3 +6,4 @@ build
 /companion.js.map
 .DS_Store
 .wakatime-project
+.idea/
