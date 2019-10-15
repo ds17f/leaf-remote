@@ -62,6 +62,7 @@ const build = () => {
 
     demo: getBoolSetting("demo"),
     debug: getBoolSetting("debug"),
+    disableTouch: getBoolSetting("disableTouch"),
     swapButtons: getBoolSetting("swapButtons"),
     stayAlive: getBoolSetting("stayAlive"),
     logLevel: getBoolSetting("debug") ? levels.TRACE : levels.WARN
@@ -69,6 +70,7 @@ const build = () => {
   app = {
     debug: companion.debug,
     demo: companion.demo,
+    disableTouch: companion.disableTouch,
     swapButtons: companion.swapButtons,
     stayAlive: companion.stayAlive,
     logLevel: companion.logLevel

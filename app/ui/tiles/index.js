@@ -67,7 +67,7 @@ const nextTile = ( forward = true ) => {
   return index[visibleTileIndex];
 };
 
-const rotateTile = (forward = true) => {
+export const rotateTile = (forward = true) => {
 
   if ( ! messaging.isPeerConnected() ) {
     return false;
@@ -77,14 +77,6 @@ const rotateTile = (forward = true) => {
   vibration.vibrateUi();
 
   return true;
-};
-
-export const rotateForward = () => {
-  rotateTile(true);
-};
-
-export const rotateBack = () => {
-  rotateTile(false);
 };
 
 export const showConsole = () => {

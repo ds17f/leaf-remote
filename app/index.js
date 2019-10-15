@@ -34,6 +34,7 @@ const settingsUpdateHandler = settings => {
   demo.toggleDemoFlag(settings.demo);
   buttons.swapButtons(settings.swapButtons);
   listeners.toggleStayAlive(settings.stayAlive);
+  touch.toggleDisableTouch(settings.disableTouch);
 };
 
 const init = () => {
