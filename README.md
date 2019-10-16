@@ -99,6 +99,11 @@ The app has been tested in North America with the region code `NNA`.
 You are welcome to input another region and see if it works.  YMMV.
 
 #### Options
+##### Disable Touch
+By default, touch is enabled.  Toggle this to "On" to disable swipe and tap controls.
+Versa owners might want to disable touch to prevent accidental interaction with the app.
+Versa Lite owners will need to enable touch as this is their only means for controlling the app.
+
 ##### Swap Buttons
 By default, the top button is the "Do" button and the bottom is the "Next" button.
 Use this toggle to swap the functionality of the buttons.
@@ -121,6 +126,11 @@ There are **3 "Tiles" or screens that you can page through.**  They are:
 
 #### Message Console
 ![Message Console](resources/screenshot3.png)
+
+### Touch
+You can swipe left or right to move through the tiles.
+Tapping a tile will "do" the action on the visible tile.
+You can disable touch in the Settings app on your phone.
 
 ### Buttons
 You interact with the app by **using the buttons on the right side** of the device.
