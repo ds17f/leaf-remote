@@ -20,17 +20,14 @@ import { logger } from "../../../common/logger";
 
 export const vibrateSuccess = (vibrateForSeconds = 3) => {
   vibration.stop();
-  logger.vibrate("vibrate: alert");
-  vibration.start("alert");
-  display.poke();
-  setTimeout(() => {
-    logger.vibrate("vibrate: alert stop");
-    vibration.stop();
-  }, vibrateForSeconds * 1000);
+  logger.vibrate("vibrate: success");
+  vibration.start("ring");
 };
 
 export const vibrateFailure = () => {
-  vibrateSuccess(10);
+  vibration.stop();
+  logger.vibrate("vibrate: failure");
+  vibration.start("ring");
 };
 
 export const vibrateInfo = isQuiet => {
