@@ -1,8 +1,3 @@
-/*
-ionic: 348x250
-versa: 300x300
-*/
-
 .defaultText {
   font-size: 32;
   font-family: System-Regular;
@@ -42,8 +37,8 @@ versa: 300x300
 }
 
 #main-screen {
-  x: 60;
-  y: 85;
+  x: 30;
+  y: 84;
   width: 237;
   height: 157;
 }
@@ -95,9 +90,4 @@ versa: 300x300
   cy: 55;
   r: 10;
   fill: red
-}
-
-.background {
-  y: 0;
-  height: 120%;
 }

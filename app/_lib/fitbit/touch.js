@@ -17,7 +17,7 @@ import document from "document";
 import { logger } from "../../../common/logger";
 
 export const registerTouch = (uiComponentName, clickCallback, leftCallback, rightCallback, upCallback, downCallback) => {
-  logger.debug(`reg: ${uiComponentName}`);
+  logger.debug(`registerTouch: ${uiComponentName}`);
   const uiComponent = document.getElementById(uiComponentName);
 
   logger.debug(`component: ${uiComponent}`);
