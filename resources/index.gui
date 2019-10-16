@@ -14,7 +14,7 @@
 
 
   <!-- The background, lay this down first -->
-  <image href="background.png" class="background fill" />
+  <image id="background" href="background.png" class="fill" />
 
   <!-- The power bar -->
   <!-- build a mask with a rect which will be resized to animate -->

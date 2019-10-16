@@ -16,13 +16,15 @@
 import { me } from "appbit";
 
 import * as settings from './_lib/fitbit/settings';
-import * as messaging from './_lib/fitbit/messaging'
+import * as messaging from './_lib/fitbit/messaging';
+import * as device from './_lib/fitbit/device';
 
 import * as tiles from './ui/tiles';
 import * as peerConnection from './ui/peerConnection';
 import * as demo from './ui/demo';
 import * as buttons from './ui/buttons';
 import * as touch from './ui/touch';
+import * as ionic from './ui/ionic';
 
 import * as actions from './actions';
 import * as listeners from './listeners';
@@ -40,6 +42,8 @@ const settingsUpdateHandler = settings => {
 const init = () => {
   setLogLevel(levels.TRACE);
   logger.warn("---- Starting up ----");
+
+  device.ifIonic(ionic.init)
 
   settings.init(settingsUpdateHandler);
   messaging.init();
