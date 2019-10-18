@@ -98,6 +98,14 @@ not the pin/pass that you enter in the Leaf's head unit.
 The app has been tested in North America with the region code `NNA`.
 You are welcome to input another region and see if it works.  YMMV.
 
+#### Analytics
+I use Google Analytics to track some basic usage information.  All data is anonymized to hide your IP address.
+I have no interest in tracking you, but I am interested in knowing how you use the app so that I can better develop
+new features and focus on what matters.
+##### Disable Analytics
+By default, analytics is enabled.  Toggle this to "Off" to set a dummy google tracker ID and disable tracking in the app.
+Again, the tracking is anonymous, the app is free and open source.  Please leave this enabled to help me help you.
+
 #### Options
 ##### Disable Touch
 By default, touch is enabled.  Toggle this to "On" to disable swipe and tap controls.
