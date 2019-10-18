@@ -33,3 +33,38 @@ export const init = () => {
   }
 };
 
+export const trackClimateAPICall = isStart => {
+  analytics.send({
+    hit_type: "event",
+    event_category: "NissanApi",
+    event_action: "Climate",
+    event_label: isStart ? "Start" : "Stop",
+  });
+};
+
+export const trackSwipe = direction => {
+  analytics.send({
+    hit_type: "event",
+    event_category: "Display",
+    event_action: "Swipe",
+    event_label: direction
+  });
+};
+
+export const trackTap = () => {
+  analytics.send({
+    hit_type: "event",
+    event_category: "Display",
+    event_action: "Tap",
+    event_label: "Tap"
+  });
+};
+
+export const trackButton = buttonAction => {
+  analytics.send({
+    hit_type: "event",
+    event_category: "Button",
+    event_action: "Press",
+    event_label: buttonAction
+  });
+};

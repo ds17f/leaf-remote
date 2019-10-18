@@ -15,6 +15,7 @@
  */
 import document from "document";
 import { logger } from "../../../common/logger";
+import { trackSwipe, trackTap } from "../google/analytics";
 
 export const registerTouch = (uiComponentName, clickCallback, leftCallback, rightCallback, upCallback, downCallback) => {
   logger.debug(`registerTouch: ${uiComponentName}`);
@@ -39,26 +40,31 @@ export const registerTouch = (uiComponentName, clickCallback, leftCallback, righ
 
     if ( xChange < -threshold) {
       logger.debug(`${uiComponentName}: leftSwipe`);
+      trackSwipe("left");
       leftCallback && leftCallback(xPos, yPos);
       return;
     }
     if ( xChange > threshold) {
       logger.debug(`${uiComponentName}: rightSwipe`);
+      trackSwipe("right");
       rightCallback && rightCallback(xPos, yPos);
       return;
     }
     if ( yChange < -threshold) {
       logger.debug(`${uiComponentName}: upSwipe`);
+      trackSwipe("up");
       upCallback && upCallback(xPos, yPos);
       return;
     }
     if ( yChange > threshold) {
       logger.debug(`${uiComponentName}: downSwipe`);
+      trackSwipe("down");
       downCallback && downCallback(xPos, yPos);
       return;
     }
     // change hasn't been a swipe, must be a touch
     logger.debug(`${uiComponentName}: tap`);
+    trackTap();
     clickCallback && clickCallback();
   };
 
