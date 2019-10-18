@@ -18,6 +18,7 @@ import { me } from "appbit";
 import * as messages from "../../common/messages/startAc";
 import { logger } from "../../common/logger";
 import { registerActionListener } from "../_lib/fitbit/messaging";
+import { trackAPIResponse } from "../_lib/google/analytics";
 
 import { consoleError, consoleInfo, consoleWarn} from "../ui/console";
 
@@ -31,23 +32,28 @@ export const registerListener = () => {
 
   registerActionListener(messages.AC_ON_START, () => {
     consoleInfo("Climate Start", "Start sent, awaiting result.");
+    trackAPIResponse("ClimateStart", "Begin", "Begin")
   });
 
   registerActionListener(messages.AC_ON_POLLING, (data) => {
     consoleInfo("Climate Start", `Awaiting result, loop: ${data.loop}`);
+    trackAPIResponse("ClimateStart", "Poll", data.loop)
   });
 
   registerActionListener(messages.AC_ON_SUCCESS, () => {
     consoleWarn("Climate Start", "Climate Started Successfully");
+    trackAPIResponse("ClimateStart", "Success", "Success")
     me.appTimeoutEnabled = !stayAlive;
     logger.debug(`appTimeoutEnabled = ${me.appTimeoutEnabled}`)
   });
 
   registerActionListener(messages.AC_ON_TIMEOUT, (data) => {
     consoleError("Climate Start", `Climate Start Failed after: ${data.timeout} seconds.`);
+    trackAPIResponse("ClimateStart", "Timeout", data.timeout)
   });
 
   registerActionListener(messages.AC_ON_FAILURE, (data) => {
     consoleError("Climate Start", `Climate Start Failed with: ${data.result}.`);
+    trackAPIResponse("ClimateStart", "Failed", data.result)
   });
 };

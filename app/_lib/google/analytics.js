@@ -42,6 +42,15 @@ export const trackClimateAPICall = isStart => {
   });
 };
 
+export const trackAPIResponse = (category, action, label) => {
+  analytics.send({
+    hit_type: "event",
+    event_category: category,
+    event_action: action,
+    event_label: label
+  });
+};
+
 export const trackSwipe = direction => {
   analytics.send({
     hit_type: "event",

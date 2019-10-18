@@ -16,6 +16,7 @@
 import * as messages from "../../common/messages/login";
 import { logger } from "../../common/logger";
 import { registerActionListener } from "../_lib/fitbit/messaging";
+import { trackAPIResponse } from "../_lib/google/analytics";
 
 import { consoleError, consoleInfo } from "../ui/console";
 
@@ -24,14 +25,17 @@ export const registerListener = () => {
 
   registerActionListener(messages.LOGIN_START, () => {
     consoleInfo(null, "Logging in to Nissan");
+    trackAPIResponse("Login", "Begin", "Begin")
   });
 
   registerActionListener(messages.LOGIN_COMPLETE, () => {
     consoleInfo(null, "Logged in successfully");
+    trackAPIResponse("Login", "Success", "Success")
   });
 
   registerActionListener(messages.LOGIN_FAILED, (data) => {
     consoleError(null, `Login failed: ${data.error}`);
+    trackAPIResponse("Login", "Failed", data.error)
   });
 
 };
