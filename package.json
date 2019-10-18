@@ -28,5 +28,8 @@
   "scripts": {
     "build": "fitbit-build",
     "debug": "fitbit"
+  },
+  "dependencies": {
+    "fitbit-google-analytics": "^1.2.0"
   }
 }
