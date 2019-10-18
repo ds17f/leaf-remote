@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 import { me as device } from "device";
+import { trackDevice } from "../google/analytics";
 import { logger } from "../../../common/logger";
 
 export const ifIonic = callback => {
   logger.trace('lib.fitbit.device.touch');
   logger.debug(`device.modelName: ${device.modelName}`);
+  trackDevice(device.modelName);
+
   if (device.modelName === 'Ionic') {
     logger.debug('device: Ionic');
     callback();
