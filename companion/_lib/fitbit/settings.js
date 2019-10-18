@@ -62,6 +62,7 @@ const build = () => {
 
     demo: getBoolSetting("demo"),
     debug: getBoolSetting("debug"),
+    disableAnalytics: getBoolSetting("disableAnalytics"),
     disableTouch: getBoolSetting("disableTouch"),
     swapButtons: getBoolSetting("swapButtons"),
     stayAlive: getBoolSetting("stayAlive"),
@@ -70,6 +71,7 @@ const build = () => {
   app = {
     debug: companion.debug,
     demo: companion.demo,
+    disableAnalytics: companion.disableAnalytics,
     disableTouch: companion.disableTouch,
     swapButtons: companion.swapButtons,
     stayAlive: companion.stayAlive,
