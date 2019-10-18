@@ -77,3 +77,12 @@ export const trackButton = buttonAction => {
     event_label: buttonAction
   });
 };
+
+export const trackDevice = deviceType => {
+  analytics.send({
+    hit_type: "event",
+    event_category: "Device",
+    event_action: "Type",
+    event_label: deviceType
+  });
+}
