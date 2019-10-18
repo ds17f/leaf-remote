@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import document from "document";
+import { trackButton } from "../../_lib/google/analytics";
 import { logger } from "../../../common/logger";
 
 const buttons = {
@@ -33,12 +34,14 @@ export const registerButtonListeners = (doAction, nextAction = null) => {
     if ( doAction ) {
       if (e.key === buttons.doButton) {
         e.preventDefault();
+        trackButton("Do");
         doAction();
       }
     }
     if ( nextAction ) {
       if (e.key === buttons.nextButton) {
         e.preventDefault();
+        trackButton("Next");
         nextAction();
       }
     }

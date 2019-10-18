@@ -1,7 +1,14 @@
 function settingsComponent(props) {
-  const isDebug = JSON.parse(props.settings.debug);
+  let isDebug = false;
+  try {
+    isDebug = JSON.parse(props.settings.debug);
+  } catch {
+    isDebug = false;
+  }
+
   return (
     <Page>
+
       <Section
         title={
           <Text bold align="center">
@@ -18,6 +25,26 @@ function settingsComponent(props) {
         <TextInput label="password" settingsKey="password" type="password" />
         <TextInput label="Nissan Region Code" settingsKey="region"/>
       </Section>
+
+      <Section
+        title={
+          <Text bold align="center">
+            Analytics
+          </Text>
+        }>
+        <Text>
+          LeafRemote uses GoogleAnalytics to track usage.  Your IP is anonymized to prevent identifying you,
+          but it's helpful to us to be able to track usage numbers in broad strokes and understand how users
+          are using the app.  We use this information to develop new features.
+
+          You can disable it with the toggle below, but we ask you to leave it on to help us.  This app is free
+          and open source, and simple scan of the source code should show you how we're using the data.
+        </Text>
+        <Toggle
+          label="Disable Analytics"
+          settingsKey="disableAnalytics" />
+      </Section>
+
       <Section
         title={
           <Text bold align="center">
@@ -34,6 +61,7 @@ function settingsComponent(props) {
           label="Developer Options"
           settingsKey="debug" />
       </Section>
+
       {! isDebug ? "" :
         <Section
           title={
@@ -52,7 +80,9 @@ function settingsComponent(props) {
             settingsKey="stayAlive" />
         </Section>
       }
+
       <Link source="https://github.com/damiansilbergleithcunniff/leaf-bit/blob/master/README.md">Need Help?</Link>
+
     </Page>
   );
 }

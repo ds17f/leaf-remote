@@ -18,6 +18,7 @@ import { me } from "appbit";
 import * as settings from './_lib/fitbit/settings';
 import * as messaging from './_lib/fitbit/messaging';
 import * as device from './_lib/fitbit/device';
+import * as analytics from './_lib/google/analytics';
 
 import * as tiles from './ui/tiles';
 import * as peerConnection from './ui/peerConnection';
@@ -37,11 +38,14 @@ const settingsUpdateHandler = settings => {
   buttons.swapButtons(settings.swapButtons);
   listeners.toggleStayAlive(settings.stayAlive);
   touch.toggleDisableTouch(settings.disableTouch);
+  analytics.toggleDisableAnalytics(settings.disableAnalytics);
 };
 
 const init = () => {
   setLogLevel(levels.TRACE);
   logger.warn("---- Starting up ----");
+
+  analytics.init();
 
   device.ifIonic(ionic.init)
 

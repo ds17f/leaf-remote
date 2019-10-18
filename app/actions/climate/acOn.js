@@ -17,6 +17,7 @@ import * as messages from "../../../common/messages/startAc";
 import { logger } from "../../../common/logger";
 
 import * as messaging from "../../_lib/fitbit/messaging";
+import { trackClimateAPICall } from "../../_lib/google/analytics";
 
 import { getVisibleTile } from "../../ui/tiles";
 import { registerButtonListeners } from "../../ui/buttons";
@@ -29,6 +30,7 @@ export const doButtonPressHandler = () => {
   if (getVisibleTile() === "acOn") {
     logger.info("Sending Climate Start Request");
     messaging.send(AC_ON());
+    trackClimateAPICall(true);
     return true;
   }
   return false;

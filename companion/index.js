@@ -16,12 +16,15 @@
 import { logger, levels, setLogLevel } from "../common/logger";
 
 import * as messaging from "./_lib/fitbit/messaging";
-import * as settings from "./_lib/fitbit/settings"
+import * as settings from "./_lib/fitbit/settings";
+import * as analytics from "./_lib/google/analytics";
 
 import * as listeners from './listeners';
 const init = () => {
   setLogLevel(levels.TRACE);
   logger.warn("---- Start Companion ----");
+  // analytics
+  analytics.init();
 
   // plumbing
   messaging.init();
@@ -31,8 +34,6 @@ const init = () => {
   // listeners
   listeners.init(settings.getCompanion);
 
-
 };
 
 init();
-
